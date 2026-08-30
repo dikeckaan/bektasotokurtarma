@@ -11,6 +11,6 @@
     "preview": "node build.mjs && npx serve dist"
   },
   "devDependencies": {
-    "wrangler": "^4.0.0"
+    "wrangler": "^4.127.1"
   }
 }

@@ -36,19 +36,16 @@ jobs:
       - name: Siteyi üret
         run: node build.mjs
 
-      - name: Secret kontrolü
-        id: secrets
-        run: |
-          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
-            echo "hazir=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "hazir=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::CLOUDFLARE_API_TOKEN tanımlı değil, Cloudflare deploy atlandı."
-          fi
+      - name: Secret uyarısı
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN == '' }}
+        run: echo "::warning::CLOUDFLARE_API_TOKEN tanımlı değil, Cloudflare deploy atlandı."
 
       - name: Cloudflare Workers'a yayınla
-        if: steps.secrets.outputs.hazir == 'true'
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # wrangler-action varsayılanı 3.90 — o sürüm wrangler.jsonc okumuyor
+          # ve "Missing entry-point" hatası veriyor. Sürümü açıkça sabitliyoruz.
+          wranglerVersion: "4.127.1"

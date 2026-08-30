@@ -10,7 +10,12 @@
     // Bulunamayan yollarda dist/404.html gosterilir
     "not_found_handling": "404-page",
     // /kadikoy-oto-kurtarma -> /kadikoy-oto-kurtarma/ otomatik yonlendirme
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+
+    // Varsayilan davranista statik dosyalar worker'a hic ugramadan servis edilir;
+    // o zaman src/worker.js'teki guvenlik basliklari, cache kurallari ve
+    // www -> apex yonlendirmesi calismaz. Bu yuzden worker once calisir.
+    "run_worker_first": true
   },
 
   "vars": {
