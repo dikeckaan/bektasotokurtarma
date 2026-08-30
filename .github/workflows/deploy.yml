@@ -1,18 +1,24 @@
-# GitHub'a her push'ta siteyi uretip Cloudflare Workers'a yayinlar.
+# Asıl yayın: her push'ta siteyi üretip Cloudflare Workers'a gönderir.
+# Hedef: https://cekici.online
 #
-# Tek seferlik kurulum:
-#   1. Cloudflare panelinde API token olustur:
-#      My Profile > API Tokens > Create Token > "Edit Cloudflare Workers" sablonu
-#   2. GitHub deposunda: Settings > Secrets and variables > Actions > New repository secret
-#      Ad: CLOUDFLARE_API_TOKEN   Deger: olusturdugun token
-#   3. Ayni yere ikinci secret: CLOUDFLARE_ACCOUNT_ID (Cloudflare panelinde sag sutunda)
+# Tek seferlik kurulum — GitHub deposunda
+# Settings > Secrets and variables > Actions > New repository secret:
+#   CLOUDFLARE_API_TOKEN   Cloudflare > My Profile > API Tokens >
+#                          "Edit Cloudflare Workers" şablonu
+#   CLOUDFLARE_ACCOUNT_ID  Cloudflare panelinde sağ sütunda yazar
+#
+# Secret'lar eklenene kadar bu iş atlanır, deponun geri kalanı çalışmaya devam eder.
 
-name: Deploy
+name: Cloudflare deploy
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: cloudflare-deploy
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -25,15 +31,23 @@ jobs:
         with:
           node-version: 22
 
-      - name: Bagimliliklar
-        run: npm ci
-
-      - name: Siteyi uret
-        run: npm run build
-
+      # Site üretimi hiçbir pakete bağlı değil — sadece Node.
       # build.mjs SEO kontrollerinde sorun bulursa exit 1 verir ve deploy durur.
+      - name: Siteyi üret
+        run: node build.mjs
 
-      - name: Cloudflare Workers'a yayinla
+      - name: Secret kontrolü
+        id: secrets
+        run: |
+          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "hazir=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "hazir=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::CLOUDFLARE_API_TOKEN tanımlı değil, Cloudflare deploy atlandı."
+          fi
+
+      - name: Cloudflare Workers'a yayınla
+        if: steps.secrets.outputs.hazir == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

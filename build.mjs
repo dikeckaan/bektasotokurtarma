@@ -19,6 +19,18 @@ import { staticPages } from "./src/pages/static.js";
 const OUT = "dist";
 const t0 = Date.now();
 
+/**
+ * Ortam degiskenleri — asil yayin (cekici.online) icin hicbiri gerekmez.
+ *
+ *   BASE_PATH    Alt dizine yayin. GitHub Pages "/kullanici/depo/" altinda
+ *                servis ettigi icin tum kok-goreli baglar bununla onekleniyor.
+ *   SITE_ORIGIN  canonical / og:url / sitemap icin alan adi
+ *   NOINDEX      "1" ise sayfalara noindex konur (onizleme yayinlari icin)
+ */
+const BASE = (process.env.BASE_PATH || "").replace(/\/$/, "");
+const NOINDEX = process.env.NOINDEX === "1";
+if (process.env.SITE_ORIGIN) site.origin = process.env.SITE_ORIGIN.replace(/\/$/, "");
+
 /* ------------------------------------------------------------ yardimcilar */
 
 async function write(rel, content) {
@@ -81,8 +93,25 @@ try {
 
 let bytes = 0;
 let largest = { path: "", size: 0 };
+/** Kok-goreli baglari alt dizine tasi ve gerekiyorsa noindex ekle. */
+function finalize(html) {
+  let out = html.replaceAll("__CSSV__", cssv);
+  if (NOINDEX) {
+    out = out.replace(
+      /<meta name="robots" content="[^"]*">/,
+      '<meta name="robots" content="noindex, nofollow">'
+    );
+  }
+  if (BASE) {
+    out = out
+      .replace(/(href|src)="\/(?!\/)/g, `$1="${BASE}/`)
+      .replace(new RegExp(`(href|src)="${BASE}/${BASE.slice(1)}/`, "g"), `$1="${BASE}/`);
+  }
+  return out;
+}
+
 for (const p of pages) {
-  const html = p.html.replaceAll("__CSSV__", cssv);
+  const html = finalize(p.html);
   const size = await write(fileFor(p.path), html);
   bytes += size;
   if (size > largest.size) largest = { path: p.path, size };
@@ -102,7 +131,7 @@ const priorityFor = (p) => {
 const urls = pages
   .filter((p) => !p.path.endsWith(".html"))
   .map((p) => `  <url>
-    <loc>${site.origin}${p.path}</loc>
+    <loc>${site.origin}${BASE}${p.path}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${p.path === "/" ? "weekly" : "monthly"}</changefreq>
     <priority>${priorityFor(p.path)}</priority>
@@ -114,11 +143,9 @@ ${urls}
 </urlset>
 `);
 
-await write("robots.txt", `User-agent: *
-Allow: /
-
-Sitemap: ${site.origin}/sitemap.xml
-`);
+await write("robots.txt", NOINDEX
+  ? `User-agent: *\nDisallow: /\n`
+  : `User-agent: *\nAllow: /\n\nSitemap: ${site.origin}${BASE}/sitemap.xml\n`);
 
 /* --------------------------------------------------------------- ikon */
 
@@ -381,6 +408,8 @@ console.log(`  En buyuk sayfa  ${largest.path} — ${kb(largest.size)}`);
 console.log(`  CSS             ${kb(css.length)}  (surum ${cssv})`);
 console.log(`  Ic link         ${linkTotal} bagi, ${known.size} hedef`);
 console.log(`  Fotograf        ${photoCount} dosya${photoCount ? "" : " (cizim yer tutucular devrede)"}`);
+if (BASE) console.log(`  Taban yol       ${BASE}`);
+if (NOINDEX) console.log(`  Robots          noindex (onizleme yayini)`);
 console.log(`  Cikti           ${OUT}/\n`);
 
 if (problems.length) {

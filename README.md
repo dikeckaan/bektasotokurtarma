@@ -45,9 +45,10 @@ Site `cekici.online` alan adına, Cloudflare Workers üzerinden yayınlanır.
 
 Bundan sonra `main` dalına her push otomatik yayına gider.
 
-### B) GitHub Actions ile
+### B) GitHub Actions ile (kurulu)
 
-Depoda `.github/workflows/deploy.yml` hazır. Sadece iki secret ekle:
+Depoda `.github/workflows/deploy.yml` hazır ve her `main` push'unda çalışıyor.
+Sadece iki secret ekle:
 
 - `CLOUDFLARE_API_TOKEN` — Cloudflare → My Profile → API Tokens →
   **Edit Cloudflare Workers** şablonu
@@ -55,8 +56,37 @@ Depoda `.github/workflows/deploy.yml` hazır. Sadece iki secret ekle:
 
 GitHub deposunda: **Settings → Secrets and variables → Actions → New repository secret**.
 
+Secret'lar eklenene kadar iş uyarı verip atlanır, depo çalışmaya devam eder.
+
 Her iki yolda da build, SEO kontrollerinden geçmezse `exit 1` verir ve
 **bozuk site yayına çıkmaz**.
+
+### GitHub Pages önizlemesi
+
+`.github/workflows/pages.yml` her push'ta siteyi
+`https://dikeckaan.github.io/bektasotokurtarma/` adresine de gönderir.
+Bu bir **önizleme**: asıl site cekici.online.
+
+- Pages alt dizinde servis ettiği için build `BASE_PATH` ile çalışır,
+  tüm kök-göreli bağlar öneklenir
+- `NOINDEX=1` verilir — aynı içeriğin iki adreste indekslenmesi ikisini de
+  zayıflatır, `robots.txt` de `Disallow: /` olur
+
+Yerelde aynı çıktıyı almak için:
+
+```bash
+BASE_PATH=/bektasotokurtarma SITE_ORIGIN=https://dikeckaan.github.io NOINDEX=1 npm run build
+```
+
+### Ortam değişkenleri
+
+| Değişken | Ne yapar |
+|---|---|
+| `BASE_PATH` | Alt dizine yayın (`/bektasotokurtarma`) |
+| `SITE_ORIGIN` | canonical / og:url / sitemap alan adı |
+| `NOINDEX` | `1` ise noindex + `Disallow: /` |
+
+Asıl yayın (cekici.online) için hiçbiri gerekmez.
 
 ### Elle deploy
 

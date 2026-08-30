@@ -1,0 +1,56 @@
+# Önizleme yayını: her push'ta siteyi GitHub Pages'e gönderir.
+# Hedef: https://<kullanici>.github.io/<depo>/
+#
+# Pages alt dizinde servis ettiği için BASE_PATH ile tüm kök-göreli
+# bağlar öneklenir. NOINDEX=1 çünkü asıl site cekici.online — aynı
+# içeriğin iki adreste indekslenmesi ikisini de zayıflatır.
+
+name: GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Siteyi üret (alt dizin + noindex)
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+          SITE_ORIGIN: https://${{ github.repository_owner }}.github.io
+          NOINDEX: "1"
+        run: node build.mjs
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
