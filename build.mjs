@@ -29,7 +29,10 @@ const t0 = Date.now();
  */
 const BASE = (process.env.BASE_PATH || "").replace(/\/$/, "");
 const NOINDEX = process.env.NOINDEX === "1";
-if (process.env.SITE_ORIGIN) site.origin = process.env.SITE_ORIGIN.replace(/\/$/, "");
+if (process.env.SITE_ORIGIN) {
+  // configure-pages bazen http:// donuyor; canonical her zaman https olmali
+  site.origin = process.env.SITE_ORIGIN.replace(/\/$/, "").replace(/^http:\/\//, "https://");
+}
 
 /* ------------------------------------------------------------ yardimcilar */
 
