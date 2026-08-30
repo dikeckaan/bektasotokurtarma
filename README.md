@@ -96,11 +96,26 @@ npx wrangler login
 npm run deploy
 ```
 
-### DNS
+### DNS — YAPILACAK
 
-Alan adı Cloudflare'de değilse, kayıt şirketinde nameserver'ları
-Cloudflare'in verdiği adreslerle değiştir. Custom domain eklendiğinde
-Cloudflare A/CNAME kaydını kendisi yazar; SSL sertifikası otomatik gelir.
+`cekici.online` Cloudflare'de **active** görünüyor ve Worker'a custom domain
+olarak bağlandı (apex + www). Ama alan adının kayıt şirketindeki
+nameserver'ları hâlâ Squarespace'te:
+
+```
+şu an : nse1.squarespacedns.com … nse4.squarespacedns.com
+olmalı: gordon.ns.cloudflare.com
+        jo.ns.cloudflare.com
+```
+
+Bu yüzden istekler Cloudflare'e hiç ulaşmıyor, Squarespace'in "Coming Soon"
+sayfası dönüyor. Kayıt şirketinde nameserver'ları yukarıdaki iki adresle
+değiştirin; yayılma tamamlandığında (genelde 1-4 saat) site kendiliğinden
+cekici.online üzerinden yayına girer. Worker tarafında yapılacak bir şey yok,
+SSL sertifikası da otomatik gelir.
+
+Squarespace DNS'te kalmak isterseniz kısmi (CNAME) kurulum gerekir, o da
+Cloudflare Business planı ister — nameserver değişikliği doğru yol.
 
 ---
 
