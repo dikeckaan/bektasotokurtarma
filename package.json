@@ -1,0 +1,16 @@
+{
+  "name": "bektas-oto-kurtarma",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bektas Oto Kurtarma - Istanbul Anadolu Yakasi 7/24 oto cekici ve yol yardim. Cloudflare Workers uzerinde statik site.",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs && wrangler dev",
+    "deploy": "node build.mjs && wrangler deploy",
+    "preview": "node build.mjs && npx serve dist"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
