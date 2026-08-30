@@ -9,7 +9,9 @@
     "dev": "node build.mjs && wrangler dev",
     "deploy": "node build.mjs && wrangler deploy",
     "preview": "node build.mjs && npx serve dist",
-    "test": "node test/site-serialize.test.mjs"
+    "test": "node test/site-serialize.test.mjs",
+    "audit": "node build.mjs > /dev/null && node tools/seo-audit.mjs",
+    "duyur": "node tools/indexnow.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.127.1"

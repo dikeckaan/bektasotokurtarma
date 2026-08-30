@@ -24,7 +24,32 @@ function bolgeler() {
 <section class="sec">
   <div class="wrap">${districtGrid(districts)}</div>
 </section>
+
 <section class="sec sec--panel">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Süreler</span>
+      <h2>Bu süreler nereden geliyor?</h2>
+      <p class="lede">Yukarıdaki dakikalar tahmin değil, son üç ayda o ilçeye giden çağrıların ortalaması. Çağrı anında size özel süreyi ayrıca teyit ediyoruz — çünkü ortalama, sizin bulunduğunuz noktayı bilmez.</p>
+    </div>
+    <div class="grid grid--3">
+      <div class="prose">
+        <h3>Neden ilçeye göre değişiyor</h3>
+        <p>Anadolu Yakası merkezden doğuya doğru seyrelir. Kadıköy–Ataşehir–Ümraniye üçgeninde araçlarımız birbirine yakın durur; Şile ve Beykoz Riva tarafında mesafe tek başına 30 dakikayı bulabilir.</p>
+      </div>
+      <div class="prose">
+        <h3>Saat de belirleyici</h3>
+        <p>D-100 ve TEM'in akşam yoğunluğunda süre uzar, gece yarısı kısalır. Bu yüzden gece çağrılarına gündüzden daha hızlı ulaşırız — ama fiyat aynı kalır.</p>
+      </div>
+      <div class="prose">
+        <h3>Araçları nereye koyduğumuz</h3>
+        <p>Filoyu sabit garajda bekletmiyoruz. Vardiya boyunca araçlar çağrı yoğunluğuna göre TEM, D-100 ve Şile Otoyolu bağlantılarına dağıtılır.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
   <div class="wrap">
     <div class="sec-head"><h2>İlçe ve hizmete göre</h2><p class="lede">Aradığınız hizmeti doğrudan bulmak için:</p></div>
     ${districts.map((d) => `<p style="margin-bottom:14px"><a href="/${d.slug}-oto-kurtarma/"><b>${esc(d.name)}</b></a> — ${comboServices.map((s) => `<a href="/${d.slug}-${s.slug}/">${esc(s.comboLabel.toLowerCase())}</a>`).join(" · ")}</p>`).join("")}
@@ -51,7 +76,48 @@ function hizmetler() {
     <div class="btn-row"><a class="btn" href="${links.tel}">Hemen ara: ${esc(site.phoneDisplay)}</a></div>
   </div></div>
 </section>
-<section class="sec"><div class="wrap">${serviceCards(sortedServices)}</div></section>
+<section class="sec"><div class="wrap">
+  <div class="sec-head"><h2>Tüm hizmetlerimiz</h2><p class="lede">Onu da yapıyoruz diye eklenmiş kalem yok; aşağıdaki her hizmet için ayrı ekipman ve ayrı ekip var.</p></div>
+  ${serviceCards(sortedServices)}
+</div></section>
+<section class="sec sec--panel">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Doğru seçim</span>
+      <h2>Çekici mi, yol yardım mı?</h2>
+      <p class="lede">İkisi arasındaki fark, aracın kendi tekerleği üzerinde yola devam edip edemeyeceğidir. Telefonda belirtiyi anlattığınızda hangisinin gerektiğini biz söylüyoruz.</p>
+    </div>
+    <div class="grid grid--2">
+      <div class="prose">
+        <h3>Yol yardım yeterlidir</h3>
+        <p>Akü bitmesi, lastik patlaması, yakıt tükenmesi, kilitli kalan anahtar. Bunlar yerinde 15-20 dakikada çözülür ve araç kendi gidişiyle yola devam eder. Bu durumda çekici ücreti ödemezsiniz.</p>
+        <p class="muted">Yerinde deneme sonuç vermezse aracı çekiciyle taşırken yalnızca çekici ücretini alıyoruz — iki kez ödeme yok.</p>
+      </div>
+      <div class="prose">
+        <h3>Çekici gerekir</h3>
+        <p>Motor çalışmıyor, vites takmıyor, kaza sonrası tekerlek kilitli, yanlış yakıt alınmış ya da araç şarampolde. Bu durumlarda aracı çalıştırmaya zorlamak zararı büyütür; kayar kasa çekici tek doğru yoldur.</p>
+        <p class="muted">Otomatik vitesli ve elektrikli araçlar halatla çekilemez; kasalı taşıma zorunludur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Filo</span>
+      <h2>Hangi iş için hangi araç</h2>
+      <p class="lede">Anadolu Yakası'nın her yeri aynı araçla çıkılacak yer değil. Çağrıyı alırken adresi sorma sebebimiz bu.</p>
+    </div>
+    <div class="grid grid--4">
+      <div class="card"><h3>Kayar kasa</h3><p>Standart taşımanın tamamı. Tekerlekler yerden tamamen kesilir, şanzımana yük binmez.</p></div>
+      <div class="card"><h3>Kızaklı sistem</h3><p>Alçak tavanlı otoparklar ve düşük gövdeli araçlar. Bağdat Caddesi ve plaza otoparkları için.</p></div>
+      <div class="card"><h3>Kompakt çekici</h3><p>Moda, Kuzguncuk, Anadoluhisarı gibi dar ve yokuşlu sokaklar. Büyük kasa manevra yapamaz.</p></div>
+      <div class="card"><h3>Kapalı kasa</h3><p>Klasik, lüks ve yeni teslim araçlar. Hava koşullarına ve taş sıçramasına kapalı.</p></div>
+    </div>
+  </div>
+</section>
+
 <section class="sec sec--panel">
   <div class="wrap">
     <div class="sec-head"><span class="eyebrow">Nasıl işliyor</span><h2>Üç adım</h2></div>
@@ -168,6 +234,11 @@ function hakkimizda() {
         <p>Kayar kasa çekiciler, dar sokaklar için kompakt araç, alçak otoparklar için kızaklı sistem, motosiklet için rampalı taşıyıcı ve klasik/lüks araçlar için kapalı kasa. Araçlarımız K türü yetki belgeli, sürücülerimiz SRC belgelidir.</p>
         <h2>Sigorta ve belgeler</h2>
         <p>Her taşıma yükleme anından teslimata kadar sigorta kapsamındadır. Teslimde imzalı taşıma tutanağı bırakıyoruz; aracın alınırken ve bırakılırken durumu fotoğraflı olarak kayıt altındadır.</p>
+        <h2>Fiyatı nasıl belirliyoruz</h2>
+        <p>Üç şeye bakıyoruz: aracın türü, alınacağı yer ve gideceği adres. Bunları telefonda öğrendiğimizde tek bir rakam söylüyoruz — “yaklaşık”, “civarı” ya da “yerinde bakarız” demiyoruz. Rakamı söyledikten sonra yola çıkıyoruz ve o rakam değişmiyor.</p>
+        <p>Gece, hafta sonu ve bayram için fark uygulamamamızın sebebi basit: en çok yardıma ihtiyaç duyulan saatlerde fiyat artırmak, bu işi kötü şöhretli yapan şeyin ta kendisi.</p>
+        <h2>Neden sadece Anadolu Yakası</h2>
+        <p>Bütün İstanbul'a hizmet verdiğini söyleyip her yere geç kalmak yerine tek yakada kalmayı seçtik. Sabit araç konumlandırdığımız 14 ilçenin ara sokaklarını, hangi otoparkın giriş yüksekliğinin ne olduğunu ve hangi kavşakta yüklemenin tehlikeli olduğunu biliyoruz. Şehirlerarası taşıma yapıyoruz; ama acil çağrıda söz verdiğimiz yer burası.</p>
       </div>
       <div class="local">
         <h3>Künye</h3>
@@ -223,6 +294,7 @@ function iletisim() {
 </section>
 <section class="sec">
   <div class="wrap">
+    <div class="sec-head"><h2>Bize ulaşın</h2><p class="lede">Telefon en hızlısı. WhatsApp'tan konum gönderirseniz adres tarif etmenize gerek kalmaz.</p></div>
     <div class="grid grid--2">
       <div class="local">
         <h3>İletişim bilgileri</h3>
@@ -249,6 +321,62 @@ function iletisim() {
     </div>
   </div>
 </section>
+<section class="sec sec--panel">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Beklerken</span>
+      <h2>Yolda kaldığınızda ilk beş dakika</h2>
+      <p class="lede">Çekici gelene kadar geçen süre, kazaların en sık yaşandığı andır. Aracınızın yanında değil, arkasında ve bariyerin ötesinde bekleyin.</p>
+    </div>
+    <div class="grid grid--2">
+      <div class="prose">
+        <h3>Şehir içinde</h3>
+        <ul class="ticks">
+          <li>Dörtlüleri hemen yakın, aracı mümkünse sağa çekin</li>
+          <li>Reflektörlü yeleği giyip aracın <b>arkasından</b> inin</li>
+          <li>Üçgeni aracın 30 metre gerisine koyun</li>
+          <li>Kaldırıma geçin; araç içinde beklemeyin</li>
+          <li>Aracı itmeye çalışmayın, otomatik vitesli araçlarda özellikle</li>
+        </ul>
+      </div>
+      <div class="prose">
+        <h3>Otoyolda (D-100, TEM, Sahil Yolu)</h3>
+        <ul class="ticks">
+          <li>Emniyet şeridine geçin, dörtlüleri yakın</li>
+          <li>Üçgeni <b>150 metre</b> geriye koyun — şehir içinden çok daha uzağa</li>
+          <li>Bariyerin arkasına geçin, hiç kimse araçta kalmasın</li>
+          <li>Gece ise yeleksiz inmeyin; görünmüyorsunuz</li>
+          <li>Konum tarif edemiyorsanız en yakın kilometre tabelasını okuyun</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Ne gerekiyor</span>
+      <h2>Durumunuza göre hangi hizmet</h2>
+      <p class="lede">Her arıza çekici gerektirmez. Aşağıdaki üç durumda araç yerinde çalıştırılıp yola devam edebiliyor; çekici ücreti ödemenize gerek kalmıyor.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <caption>Telefonda söylediğiniz belirtiye göre yönlendirme</caption>
+        <thead><tr><th scope="col">Belirti</th><th scope="col">Muhtemel sebep</th><th scope="col">Gereken</th></tr></thead>
+        <tbody>
+          <tr><td>Marşa basınca tık sesi</td><td class="muted">Akü bitmiş</td><td><a href="/hizmetler/aku-takviye/">Akü takviye</a></td></tr>
+          <tr><td>Marş dönüyor, çalışmıyor</td><td class="muted">Yakıt veya elektrik</td><td><a href="/hizmetler/yol-yardim/">Yol yardım</a></td></tr>
+          <tr><td>Direksiyon ağırlaştı, ses geliyor</td><td class="muted">Lastik inmiş</td><td><a href="/hizmetler/lastik-degisimi/">Lastik değişimi</a></td></tr>
+          <tr><td>Vites takmıyor, araç yürümüyor</td><td class="muted">Şanzıman / debriyaj</td><td><a href="/hizmetler/oto-cekici/">Oto çekici</a></td></tr>
+          <tr><td>Kaza sonrası hareket edemiyor</td><td class="muted">Şasi / tekerlek kilidi</td><td><a href="/hizmetler/kaza-kurtarma/">Kaza kurtarma</a></td></tr>
+          <tr><td>Anahtar içeride kaldı</td><td class="muted">—</td><td><a href="/hizmetler/kapi-acma/">Kapı açma</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <section class="sec sec--panel">
   <div class="wrap">
     <div class="sec-head"><h2>Bölgenize göre</h2><p class="lede">Bulunduğunuz ilçenin sayfasında o bölgeye özel varış süresi ve saha notlarımız var.</p></div>

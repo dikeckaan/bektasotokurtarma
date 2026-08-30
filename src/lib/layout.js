@@ -128,22 +128,22 @@ export function footer() {
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <h4>${esc(site.name)}</h4>
+        <h2>${esc(site.name)}</h2>
         <p>${site.addressVerified ? `${esc(site.address.street)}, ${esc(site.address.district)} / ${esc(site.address.city)}` : "İstanbul Anadolu Yakası geneli · hizmet alanı işletmesi"}</p>
         <p>Anadolu Yakası'nın tamamında 7/24 oto çekici, yol yardım ve kaza kurtarma.</p>
         <a class="foot-tel" href="${telHref}" data-track="tel-footer">${esc(site.phoneDisplay)}</a>
         ${social.length ? `<p>${social.map(([k, v]) => `<a href="${esc(v)}" rel="noopener">${esc(k)}</a>`).join(" · ")}</p>` : ""}
       </div>
       <div>
-        <h4>Hizmetler</h4>
+        <h2>Hizmetler</h2>
         <ul>${sortedServices.map((s) => `<li><a href="/hizmetler/${s.slug}/">${esc(s.name)}</a></li>`).join("")}</ul>
       </div>
       <div>
-        <h4>Bölgeler</h4>
+        <h2>Bölgeler</h2>
         <ul>${districts.slice(0, 7).map((d) => `<li><a href="/${d.slug}-oto-kurtarma/">${esc(d.name)}</a></li>`).join("")}</ul>
       </div>
       <div>
-        <h4>&nbsp;</h4>
+        <h2 class="sr-only">Bölgeler, devamı</h2>
         <ul>${districts.slice(7).map((d) => `<li><a href="/${d.slug}-oto-kurtarma/">${esc(d.name)}</a></li>`).join("")}
           <li><a href="/bolgeler/">Tüm bölgeler</a></li>
         </ul>

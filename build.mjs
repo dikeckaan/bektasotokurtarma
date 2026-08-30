@@ -16,6 +16,8 @@ import { servicePages } from "./src/pages/service.js";
 import { comboPages } from "./src/pages/combo.js";
 import { staticPages } from "./src/pages/static.js";
 import { editPage } from "./src/pages/edit.js";
+import { llmsTxt, llmsFullTxt } from "./src/lib/llms.js";
+import { indexNowKey } from "./src/data/indexnow.js";
 
 const OUT = "dist";
 const t0 = Date.now();
@@ -153,9 +155,44 @@ ${urls}
 
 const disallow = pages.filter((p) => p.noindex && !p.path.endsWith(".html"))
   .map((p) => `Disallow: ${BASE}${p.path}`).join("\n");
-await write("robots.txt", NOINDEX
-  ? `User-agent: *\nDisallow: /\n`
-  : `User-agent: *\nAllow: /\n${disallow ? disallow + "\n" : ""}\nSitemap: ${site.origin}${BASE}/sitemap.xml\n`);
+const llmsBytes = (await write("llms.txt", llmsTxt())) + (await write("llms-full.txt", llmsFullTxt()));
+
+// Yapay zeka tarayicilarini acikca karsiliyoruz: bir cekici isletmesi icin
+// asistanlarin "Kadikoy'de gece cekici" sorusuna dogru cevap vermesi,
+// arama sonucunda ust sirada cikmak kadar degerli.
+const AI_BOTS = [
+  "GPTBot", "OAI-SearchBot", "ChatGPT-User",
+  "ClaudeBot", "Claude-User", "Claude-SearchBot",
+  "PerplexityBot", "Perplexity-User",
+  "Google-Extended", "Applebot-Extended",
+  "meta-externalagent", "Amazonbot", "Bytespider", "CCBot",
+  "DuckAssistBot", "cohere-ai", "YouBot",
+];
+
+const robotsTxt = NOINDEX
+  ? "User-agent: *\nDisallow: /\n"
+  : [
+      `# ${site.name} — ${site.origin}${BASE}/`,
+      `# Yapilandirilmis ozet: ${site.origin}${BASE}/llms.txt`,
+      `# Tam metin:            ${site.origin}${BASE}/llms-full.txt`,
+      "",
+      "User-agent: *",
+      "Allow: /",
+      disallow,
+      "",
+      "# Yapay zeka asistanlari ve arama tarayicilari acikca karsilanir.",
+      "# Varsayilan zaten izin veriyor; bu bloklar niyeti acikca beyan eder.",
+      "",
+      AI_BOTS.map((b) => `User-agent: ${b}\nAllow: /\n${disallow}`).join("\n\n"),
+      "",
+      `Sitemap: ${site.origin}${BASE}/sitemap.xml`,
+      "",
+    ].join("\n").replace(/\n{3,}/g, "\n\n");
+
+await write("robots.txt", robotsTxt);
+
+// IndexNow dogrulama dosyasi — anahtarin kendisini icerir
+if (!NOINDEX) await write(`${indexNowKey}.txt`, indexNowKey);
 
 /* --------------------------------------------------------------- ikon */
 
@@ -418,6 +455,7 @@ console.log(`  En buyuk sayfa  ${largest.path} — ${kb(largest.size)}`);
 console.log(`  CSS             ${kb(css.length)}  (surum ${cssv})`);
 console.log(`  Ic link         ${linkTotal} bagi, ${known.size} hedef`);
 console.log(`  Fotograf        ${photoCount} dosya${photoCount ? "" : " (cizim yer tutucular devrede)"}`);
+console.log(`  llms.txt        ${(llmsBytes / 1024).toFixed(1)} KB (llms.txt + llms-full.txt)`);
 if (BASE) console.log(`  Taban yol       ${BASE}`);
 if (NOINDEX) console.log(`  Robots          noindex (onizleme yayini)`);
 console.log(`  Cikti           ${OUT}/\n`);
