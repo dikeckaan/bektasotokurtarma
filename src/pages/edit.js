@@ -112,7 +112,8 @@ const STYLE = `<style>
 .ed-head{border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:30px}
 .ed-head h1{font-size:clamp(30px,4.5vw,46px)}
 .ed-warn{margin-top:18px;border-left:2px solid var(--amber);padding:4px 0 4px 16px;color:var(--mut);font-size:15px;max-width:74ch}
-.ed-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,410px);gap:34px;align-items:start}
+.ed-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,410px);gap:34px;align-items:start}
+.ed-grid > *{min-width:0}
 @media (max-width:1000px){.ed-grid{grid-template-columns:1fr}}
 .grp{border:1px solid var(--line);border-radius:3px;background:var(--panel-2);margin-bottom:20px;overflow:hidden}
 .grp > summary{
@@ -147,12 +148,15 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 }
 .btn-sm:hover{border-color:var(--amber);color:var(--amber)}
 .btn-sm.dngr:hover{border-color:var(--danger);color:var(--danger)}
-.side{position:sticky;top:82px;display:grid;gap:18px}
-.side .card{background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:20px;gap:14px}
+.side{position:sticky;top:82px;display:grid;gap:18px;min-width:0}
+.side .card{background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:20px;gap:14px;min-width:0}
+.prev,.prev-bar{min-width:0}
+.prev-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .out{
-  width:100%;min-height:260px;background:#0A0C0F;border:1px solid var(--line);border-radius:2px;
+  width:100%;max-width:100%;min-height:260px;max-height:420px;
+  background:#0A0C0F;border:1px solid var(--line);border-radius:2px;
   color:#C9D0D8;font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-size:12px;line-height:1.55;
-  padding:14px;white-space:pre;overflow:auto;
+  padding:14px;white-space:pre;overflow:auto;margin:0;
 }
 .acts{display:flex;gap:10px;flex-wrap:wrap}
 .acts .btn{font-size:16px;padding:11px 18px}
@@ -207,7 +211,7 @@ export function editPage() {
   <div class="ed-head">
     <span class="eyebrow">Yönetim aracı</span>
     <h1>Site bilgilerini düzenle</h1>
-    <p class="lede">Aşağıdaki alanları doldur, sağdaki <b>site.js indir</b> düğmesine bas. İnen dosyayı depodaki <code>src/data/site.js</code> ile değiştirip push ettiğinde 116 sayfanın tamamı güncellenir.</p>
+    <p class="lede">Aşağıdaki alanları doldur, sağdaki <b>site.js indir</b> düğmesine bas. İnen dosyayı depodaki <code>src/data/site.js</code> ile değiştirip push ettiğinde sitenin tamamı güncellenir.</p>
     <p class="ed-warn">Bu sayfa hiçbir şey kaydetmez ve siteyi değiştirmez — sadece tarayıcında bir dosya üretir. Değişiklik yayına ancak dosyayı depoya koyup push ettiğinde girer.</p>
   </div>
 
