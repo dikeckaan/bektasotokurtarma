@@ -66,6 +66,7 @@ export function llmsTxt() {
   L.push(`- [Sık sorulan sorular](${u("/sss/")}): süre, fiyat, sigorta, kasko ve ödeme soruları`);
   L.push(`- [Hakkımızda](${u("/hakkimizda/")}): filo, belgeler ve çalışma biçimi`);
   L.push(`- [İletişim](${u("/iletisim/")}): yolda kalındığında ilk beş dakika ve belirti-hizmet tablosu`);
+  L.push(`- [Varış süresi haritası](${u("/varis-suresi/")}): konuma göre ilçe tespiti ve o ilçenin ortalama varış süresi`);
   L.push(`- [Tüm bölgeler](${u("/bolgeler/")}) · [Tüm hizmetler](${u("/hizmetler/")})`);
   L.push("");
   L.push("## Optional");
@@ -126,6 +127,18 @@ export function llmsFullTxt() {
     L.push("");
   });
 
+  L.push("---");
+  L.push("");
+  L.push("## Varış süreleri");
+  L.push("");
+  L.push(`Ortalama varış süresi ${site.claims.avgEta} dakika. Asagidaki degerler son uc ayin ortalamasidir; kesin sure telefonda, en yakin aracin gercek konumuna bakilarak soylenir.`);
+  L.push("");
+  L.push("| İlçe | Ortalama varış |");
+  L.push("| --- | --- |");
+  districts.forEach((d) => L.push(`| ${d.name} | ${etaText(d)} |`));
+  L.push("");
+  L.push(`Konuma gore hesaplama: ${u("/varis-suresi/")}`);
+  L.push("");
   L.push("---");
   L.push("");
   L.push("## Fiyatlar");
