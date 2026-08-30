@@ -156,6 +156,8 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 }
 .acts{display:flex;gap:10px;flex-wrap:wrap}
 .acts .btn{font-size:16px;padding:11px 18px}
+.acts .btn[disabled]{background:#2A2F37;color:#6E757F;cursor:not-allowed}
+.acts .btn[disabled]:hover{background:#2A2F37}
 .chk{display:grid;gap:8px;font-size:14px}
 .chk li{list-style:none;display:flex;gap:9px;align-items:flex-start;color:var(--mut)}
 .chk li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);margin-top:7px;flex:none}
@@ -349,6 +351,14 @@ export function editPage() {
     document.getElementById("checks").innerHTML = list.map(function (x) {
       return '<li class="' + x[0] + '">' + x[1].replace(/</g, "&lt;") + "</li>";
     }).join("");
+
+    // Kirmizi bir uyari varken indirmeyi kapat: bozuk site.js yayina gitmesin
+    var bad = list.filter(function (x) { return x[0] === "bad"; }).length;
+    var dl = document.getElementById("dl");
+    dl.disabled = bad > 0;
+    dl.textContent = bad ? bad + " hata düzeltilmeli" : "site.js indir";
+    dl.title = bad ? "Kırmızı işaretli sorunlar giderilmeden dosya indirilemez" : "";
+    return bad;
   }
 
   var current = "";
@@ -427,6 +437,7 @@ export function editPage() {
   });
 
   document.getElementById("dl").addEventListener("click", function () {
+    if (this.disabled) return;
     var blob = new Blob([current], { type: "text/javascript;charset=utf-8" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
