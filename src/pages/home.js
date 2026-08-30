@@ -71,6 +71,7 @@ export function homePage() {
       <p class="lede">Her ilçeye sabit araç konumlandırdık. Yandaki süreler son üç ayın ortalama varış süreleridir; çağrı anında size özel süreyi ayrıca teyit ediyoruz.</p>
     </div>
     ${districtGrid(districts)}
+    <p style="margin-top:22px"><a href="/varis-suresi/"><b>Çekici size kaç dakikada ulaşır?</b></a> — konumunuzu paylaşın ya da haritadan ilçenizi seçin.</p>
   </div>
 </section>
 

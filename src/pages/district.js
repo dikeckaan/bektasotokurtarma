@@ -77,6 +77,7 @@ export function districtPages() {
           <dt>Çalışma saatleri</dt><dd>7 gün 24 saat, bayram dahil</dd>
           <dt>Ödeme</dt><dd>${esc(site.payments.join(", "))}</dd>
         </dl>
+        <p style="margin-top:16px;font-size:14.5px"><a href="/varis-suresi/">Varış süresi haritası</a> — konumunuza göre hesaplayın</p>
       </div>
     </div>
   </div>

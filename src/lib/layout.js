@@ -146,6 +146,7 @@ export function footer() {
         <h2 class="sr-only">Bölgeler, devamı</h2>
         <ul>${districts.slice(7).map((d) => `<li><a href="/${d.slug}-oto-kurtarma/">${esc(d.name)}</a></li>`).join("")}
           <li><a href="/bolgeler/">Tüm bölgeler</a></li>
+          <li><a href="/varis-suresi/">Varış süresi haritası</a></li>
         </ul>
       </div>
     </div>

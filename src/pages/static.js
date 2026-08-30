@@ -5,6 +5,7 @@ import { generalFaq, priceTable } from "../data/faq.js";
 import { page, ctaBand, faqBlock, districtGrid, serviceCards, links } from "../lib/layout.js";
 import { esc, etaText, mkTitle } from "../lib/util.js";
 import { photo } from "../lib/media.js";
+import { mapSvg } from "../lib/map.js";
 import { faqSchema } from "../lib/schema.js";
 
 const crumb = (label) => [{ label: "Ana sayfa", href: "/" }, { label }];
@@ -22,7 +23,11 @@ function bolgeler() {
   </div></div>
 </section>
 <section class="sec">
-  <div class="wrap">${districtGrid(districts)}</div>
+  <div class="wrap">
+    ${mapSvg({ id: "bolge-harita" })}
+    <p style="margin:22px 0 30px"><a href="/varis-suresi/"><b>Konumunuza göre varış süresi hesaplayın</b></a> — haritadan ilçe seçin ya da konumunuzu paylaşın.</p>
+    ${districtGrid(districts)}
+  </div>
 </section>
 
 <section class="sec sec--panel">

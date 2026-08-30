@@ -275,6 +275,91 @@ a.card:hover{border-color:var(--amber);text-decoration:none;transform:translateY
 .dist .eta.far{color:var(--amber)}
 .dist small{color:var(--mut);font-size:12.5px}
 
+/* ---------- Harita ---------- */
+.mapwrap{--mp-line:#0C0E11}
+.map{
+  width:100%;height:auto;display:block;
+  background:#0E1219;border:1px solid var(--line);border-radius:3px;
+}
+.mp{stroke:var(--mp-line);stroke-width:1.6;stroke-linejoin:round;transition:fill .15s ease}
+.mp--b1{fill:#FFB020}
+.mp--b2{fill:#C1811C}
+.mp--b3{fill:#7E5616}
+.mp--b4{fill:#6B4C18}
+.mp--ada{fill:#22272F}
+.mp-g{cursor:pointer;outline:none}
+.mp-g:hover .mp,.mp-g:focus-visible .mp{fill:#FFD37A}
+.mp-g:focus-visible .mp{stroke:var(--paper);stroke-width:2.4}
+.mp-g[aria-pressed="true"] .mp,.mp-g.secili .mp{fill:#FFF0CC;stroke:var(--paper);stroke-width:2.4}
+.mp-lbl{pointer-events:none}
+.mp-ad{
+  font-family:var(--f-disp);font-size:17px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.04em;fill:#0C0E11;
+  paint-order:stroke;stroke:rgba(255,255,255,.28);stroke-width:2.5;
+}
+.mp-eta{
+  font-family:var(--f-body);font-size:13px;font-weight:600;fill:#0C0E11;opacity:.75;
+  paint-order:stroke;stroke:rgba(255,255,255,.22);stroke-width:2;
+}
+.mp--b3 + .mp-lbl .mp-ad{fill:var(--paper)}
+/* Koyu zeminde veya harita disinda kalan etiketler acik renk */
+.mp-lbl[data-ilce="sile"] .mp-ad,.mp-lbl[data-ilce="beykoz"] .mp-ad,
+.mp-lbl[data-ilce="cekmekoy"] .mp-ad,.mp-lbl[data-ilce="adalar"] .mp-ad,
+.mp-lbl[data-ilce="tuzla"] .mp-ad,.mp-lbl[data-ilce="sultanbeyli"] .mp-ad,
+.mp-lbl[data-ilce="uskudar"] .mp-ad,.mp-lbl[data-ilce="kadikoy"] .mp-ad{fill:#F2F0EC;stroke:rgba(0,0,0,.5)}
+.mp-lbl[data-ilce="sile"] .mp-eta,.mp-lbl[data-ilce="beykoz"] .mp-eta,
+.mp-lbl[data-ilce="cekmekoy"] .mp-eta,.mp-lbl[data-ilce="adalar"] .mp-eta,
+.mp-lbl[data-ilce="tuzla"] .mp-eta,.mp-lbl[data-ilce="sultanbeyli"] .mp-eta,
+.mp-lbl[data-ilce="uskudar"] .mp-eta,.mp-lbl[data-ilce="kadikoy"] .mp-eta{fill:#C3C9D1;opacity:1}
+.mp-kilavuz{stroke:#5A6470;stroke-width:1.2;stroke-dasharray:3 3}
+
+.map-legend{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:16px;font-size:13.5px;color:var(--mut)}
+.lg{display:inline-flex;align-items:center;gap:8px}
+.sw{width:13px;height:13px;border-radius:2px;display:inline-block;flex:none;border:1px solid rgba(0,0,0,.4)}
+.sw--b1{background:#FFB020}.sw--b2{background:#C1811C}.sw--b3{background:#7E5616}
+.sw--b4{background:#463314}.sw--ada{background:#22272F;border-color:#3A424D}
+.map-attr{margin-top:12px;font-size:12.5px;color:#6E757F}
+.map-attr a{color:#6E757F;text-decoration:underline}
+.map-attr a:hover{color:var(--amber)}
+/* Dar sutunda ve mobilde harita kucuk render edilir, etiketler buyutulur */
+@media (max-width:1100px){
+  .mp-ad{font-size:20px}
+  .mp-eta{font-size:16px}
+}
+
+/* ---------- Varış süresi aracı ---------- */
+.eta-tool{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:var(--gap);align-items:start}
+@media (max-width:900px){.eta-tool{grid-template-columns:1fr}}
+.eta-panel{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:22px;
+  position:sticky;top:82px;display:grid;gap:16px;min-width:0;
+}
+@media (max-width:900px){.eta-panel{position:static}}
+.eta-actions{display:grid;gap:10px}
+.eta-actions .btn{width:100%}
+#ilce-sec{
+  width:100%;background:#0F1216;border:1px solid #2E343C;border-radius:2px;color:var(--paper);
+  font-family:var(--f-body);font-size:15.5px;padding:11px 12px;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--amber) 50%),linear-gradient(135deg,var(--amber) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+}
+#ilce-sec:focus{outline:none;border-color:var(--amber)}
+.eta-sonuc{border-top:1px solid var(--line);padding-top:16px;min-height:120px;display:grid;gap:10px;align-content:start}
+.eta-bos{color:var(--mut);font-size:14.5px;margin:0}
+.eta-etiket{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.eta-sure{font-family:var(--f-disp);font-size:clamp(40px,7vw,58px);font-weight:700;line-height:1;color:var(--amber)}
+.eta-btns{margin-top:4px}
+.eta-btns .btn{font-size:17px;padding:12px 18px}
+.eta-alt{font-size:14px;color:var(--mut);margin:0}
+.eta-uyari{
+  background:rgba(255,176,32,.1);border-left:2px solid var(--amber);
+  padding:10px 14px;font-size:14px;color:#E7D6B4;margin:0;
+}
+.eta-not{font-size:12.5px;color:#6E757F;margin:0;line-height:1.5}
+button.btn{font-family:var(--f-disp);cursor:pointer;border:1px solid transparent}
+button.btn[disabled]{background:#2A2F37;color:#6E757F;cursor:progress}
+
 /* ---------- Etiket / rozet ---------- */
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{

@@ -16,6 +16,7 @@ import { servicePages } from "./src/pages/service.js";
 import { comboPages } from "./src/pages/combo.js";
 import { staticPages } from "./src/pages/static.js";
 import { editPage } from "./src/pages/edit.js";
+import { etaPage } from "./src/pages/eta.js";
 import { llmsTxt, llmsFullTxt } from "./src/lib/llms.js";
 import { indexNowKey } from "./src/data/indexnow.js";
 
@@ -57,6 +58,7 @@ const pages = [
   ...servicePages(),
   ...districtPages(),
   ...comboPages(),
+  etaPage(),
   editPage(),
 ];
 
@@ -433,7 +435,9 @@ const linkedTo = new Set();
 let linkTotal = 0;
 
 for (const p of pages) {
-  for (const m of p.html.matchAll(/href="(\/[^"#?]*)(?:\?[^"]*)?"/g)) {
+  // <script> govdesindeki string'ler href degil; tarama disi birakiliyor
+  const govde = p.html.replace(/<script[\s\S]*?<\/script>/g, "");
+  for (const m of govde.matchAll(/href="(\/[^"#?]*)(?:\?[^"]*)?"/g)) {
     linkTotal++;
     if (!known.has(m[1])) problems.push(`Kirik ic link ${m[1]} (${p.path})`);
     else linkedTo.add(m[1]);

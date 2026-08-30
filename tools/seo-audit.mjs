@@ -7,7 +7,8 @@
  * gercekten sirayi etkileyen seyleri olcmek: benzersizlik, ince icerik,
  * kopya icerik, tiklama derinligi, schema butunlugu, sayfa agirligi.
  */
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
+import { gzipSync } from "node:zlib";
 import path from "node:path";
 
 const DIST = "dist";
@@ -83,6 +84,8 @@ for (const f of files) {
   pages.push({
     url, file: f,
     bytes: Buffer.byteLength(html),
+    // Onemli olan tel uzerinden giden boyut; Cloudflare her sayfayi sikistirarak servis eder
+    gzip: gzipSync(html, { level: 9 }).length,
     title: attr(html, /<title>([^<]*)<\/title>/),
     desc: attr(html, /<meta name="description" content="([^"]*)"/),
     canonical: attr(html, /<link rel="canonical" href="([^"]*)"/),
@@ -263,7 +266,9 @@ if (tekrarSoru) say("UYARI", `${tekrarSoru} sayfada ayni S.S.S. sorusu iki kez g
 /* 8. Teknik */
 R.push("\n7. TEKNIK");
 const boyut = indexable.map((p) => p.bytes).sort((a, b) => a - b);
+const gz = indexable.map((p) => p.gzip).sort((a, b) => a - b);
 R.push(`   HTML boyutu                medyan ${(boyut[Math.floor(boyut.length / 2)] / 1024).toFixed(1)} KB · max ${(boyut[boyut.length - 1] / 1024).toFixed(1)} KB`);
+R.push(`   Sikistirilmis (gzip)       medyan ${(gz[Math.floor(gz.length / 2)] / 1024).toFixed(1)} KB · max ${(gz[gz.length - 1] / 1024).toFixed(1)} KB`);
 R.push(`   lang="tr"                  ${indexable.filter((p) => p.lang === "tr").length}/${indexable.length}`);
 R.push(`   viewport                   ${indexable.filter((p) => p.viewport).length}/${indexable.length}`);
 R.push(`   canonical                  ${indexable.filter((p) => p.canonical.startsWith(ORIGIN)).length}/${indexable.length}`);
@@ -272,8 +277,9 @@ const kendiCanonical = indexable.filter((p) => p.canonical !== ORIGIN + p.url);
 if (kendiCanonical.length) say("KRITIK", `${kendiCanonical.length} sayfanin canonical'i kendisini gostermiyor`, kendiCanonical.slice(0, 3).map((p) => p.url));
 const altsiz = indexable.flatMap((p) => p.imgs.filter((i) => !/alt="/.test(i)).map(() => p.url));
 if (altsiz.length) say("UYARI", `${altsiz.length} gorselde alt metni yok`);
-const buyuk = indexable.filter((p) => p.bytes > 60000);
-if (buyuk.length) say("UYARI", `${buyuk.length} sayfa 60 KB'i asiyor`);
+// Esik sikistirilmis boyut uzerinden: ziyaretcinin gercekten indirdigi bu
+const buyuk = indexable.filter((p) => p.gzip > 50000);
+if (buyuk.length) say("UYARI", `${buyuk.length} sayfa sikistirilmis halde 50 KB'i asiyor`, buyuk.slice(0, 3).map((p) => `${p.url} (${(p.gzip / 1024).toFixed(1)} KB)`));
 
 /* 9. Sitemap tutarliligi */
 const smap = await readFile(path.join(DIST, "sitemap.xml"), "utf8");
