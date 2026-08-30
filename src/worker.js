@@ -47,6 +47,14 @@ export default {
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) headers.set(key, value);
 
     const contentType = headers.get("content-type") || "";
+
+    // Karakter seti: charset'siz text/plain gonderildiginde tarayici kendi
+    // varsayilanina duser (Android'de Turkce yerelde genelde windows-1254) ve
+    // llms.txt / robots.txt gibi dosyalarda Turkce karakterler bozuk gorunur.
+    if (/^(text\/|application\/(xml|json|javascript))/.test(contentType) && !/charset=/i.test(contentType)) {
+      headers.set("content-type", contentType + "; charset=utf-8");
+    }
+
     if (contentType.startsWith("text/html")) {
       // HTML: kisa tarayici cache'i, uzun kenar cache'i (deploy'da purge olur).
       headers.set("Cache-Control", "public, max-age=0, must-revalidate");

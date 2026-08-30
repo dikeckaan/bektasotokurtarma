@@ -11,7 +11,8 @@
     "preview": "node build.mjs && npx serve dist",
     "test": "node test/site-serialize.test.mjs && node test/geo.test.mjs",
     "audit": "node build.mjs > /dev/null && node tools/seo-audit.mjs",
-    "duyur": "node tools/indexnow.mjs"
+    "duyur": "node tools/indexnow.mjs",
+    "canli": "node tools/live-check.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.127.1"

@@ -268,6 +268,22 @@ sahipliği, aynı anahtarın `/{anahtar}.txt` adresinde yayınlanmasıyla kanıt
 **Google IndexNow kullanmaz.** Oraya bildirim için Search Console'a
 `https://cekici.online/sitemap.xml` eklemeniz gerekir.
 
+## Canlı kontrol
+
+```bash
+npm run canli                    # cekici.online
+npm run canli -- https://...     # başka bir adres
+```
+
+Yayındaki gerçek cevapları denetler: sayfalar açılıyor mu, **charset
+bildiriliyor mu**, cache ve güvenlik başlıkları geliyor mu, robots.txt
+sözleşmeleri duruyor mu, `/duzenle/` noindex mi, bilinmeyen yol 404 mü.
+
+Bu sınıf hatalar üretilen dosyada görünmez, yalnızca sunucu cevabında
+görünür. Örnek: `.txt` dosyaları `charset` bildirilmeden gönderildiğinde
+Android'de Türkçe karakterler bozuk çıkıyordu — dosya UTF-8'di, sorun
+başlıktaydı.
+
 ## Testler
 
 ```bash
