@@ -236,6 +236,38 @@ içinde. Sayfa bu fonksiyonun kaynağını `toString()` ile gömüyor, testler d
 aynı fonksiyonu çağırıyor — yani tarayıcıdaki üretici ile test edilen kod
 birebir aynı.
 
+## SEO ve duyuru
+
+```bash
+npm run audit    # SEO denetimi
+npm run duyur    # IndexNow bildirimi (Bing, Yandex, Seznam, Naver)
+```
+
+`tools/seo-audit.mjs` ölçtükleri: başlık/açıklama benzersizliği ve uzunluğu,
+`<main>` içindeki başlık hiyerarşisi, boş başlık, ince içerik, 5-kelimelik
+parçalarla kopya içerik benzerliği, tıklama derinliği, gelen iç link sayısı,
+çapa metni çeşitliliği, schema.org bütünlüğü, sitemap tutarlılığı, sayfa
+ağırlığı. Kritik bulgu varsa `exit 1`.
+
+### llms.txt
+
+- `/llms.txt` — sitenin ne olduğu, hizmetler, bölgeler ve politikalar
+- `/llms-full.txt` — tüm hizmet ve bölge içeriği tek dosyada (30 KB)
+
+İkisi de HTML'den kazınmıyor, veri dosyalarından üretiliyor; site
+güncellenince kendiliğinden güncelleniyor. `robots.txt` bu adresleri
+gösteriyor ve 17 yapay zeka/arama tarayıcısını açıkça karşılıyor.
+
+### IndexNow
+
+`npm run duyur` sitemap'teki tüm URL'leri Bing, Yandex, Seznam ve Naver'a
+bildirir. Göndermeden önce anahtar dosyasının ve sitenin canlı olduğunu
+doğrular. Anahtar `src/data/indexnow.js` içinde ve gizli değil — alan adı
+sahipliği, aynı anahtarın `/{anahtar}.txt` adresinde yayınlanmasıyla kanıtlanır.
+
+**Google IndexNow kullanmaz.** Oraya bildirim için Search Console'a
+`https://cekici.online/sitemap.xml` eklemeniz gerekir.
+
 ## Testler
 
 ```bash
@@ -266,9 +298,11 @@ dosya yolu yazıldığı anda o alan `<img>`'e dönüşüyor.
   Worker bunu `immutable` olarak 1 yıl cache'liyor
 - Görsel kullanılmıyor; eklenirken WebP/AVIF, `width`/`height` ve
   `loading="lazy"` zorunlu (CLS için)
-- Fontlar şu an Google Fonts'tan yükleniyor. LCP'yi düşürmek için
-  `Saira Condensed` ve `Barlow` woff2 dosyalarını `assets/fonts/` altına
-  indirip `@font-face` ile self-host etmek önerilir.
+- Fontlar kendi sunucumuzda: `assets/fonts/` içinde 10 woff2 (118 KB),
+  `assets/fonts.css` build sırasında `styles.css`'in başına ekleniyor.
+  Üçüncü taraf istek yok — hem daha hızlı hem KVKK açısından temiz
+  (Google Fonts ziyaretçi IP'sini Google'a gönderir).
+  **`latin-ext` alt kümesini silmeyin**, Türkçe karakterler orada.
 
 ## Dosya düzeni
 

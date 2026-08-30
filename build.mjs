@@ -4,7 +4,7 @@
  *   npm run build   -> dist/
  *   npm run deploy  -> build + wrangler deploy
  */
-import { mkdir, writeFile, readFile, rm, cp, access } from "node:fs/promises";
+import { mkdir, writeFile, readFile, rm, cp, access, readdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { deflateSync } from "node:zlib";
 import path from "node:path";
@@ -85,16 +85,17 @@ await rm(OUT, { recursive: true, force: true });
 await mkdir(OUT, { recursive: true });
 
 // CSS + surum damgasi (uzun cache icin)
-const css = await readFile("assets/styles.css", "utf8");
+const fontCss = await readFile("assets/fonts.css", "utf8");
+const css = fontCss + "\n" + (await readFile("assets/styles.css", "utf8"));
 const cssv = createHash("sha256").update(css).digest("hex").slice(0, 8);
 await write("styles.css", css);
 
 // Gercek fotograflar: assets/img -> dist/img
 let photoCount = 0;
+await cp("assets/fonts", path.join(OUT, "fonts"), { recursive: true });
 try {
   await access("assets/img");
   await cp("assets/img", path.join(OUT, "img"), { recursive: true });
-  const { readdir } = await import("node:fs/promises");
   photoCount = (await readdir("assets/img")).filter((f) => /\.(webp|avif|jpg|jpeg|png)$/i.test(f)).length;
 } catch {}
 
@@ -423,7 +424,11 @@ await write("og.png", ogPng());
 /* ------------------------------------------------------- ic link kontrolu */
 
 const known = new Set(pages.map((p) => p.path));
-["/styles.css", "/favicon.svg", "/apple-touch-icon.png", "/sitemap.xml", "/robots.txt"].forEach((f) => known.add(f));
+["/styles.css", "/favicon.svg", "/apple-touch-icon.png", "/sitemap.xml", "/robots.txt",
+ "/og.png", "/llms.txt", "/llms-full.txt"].forEach((f) => known.add(f));
+// Font ve gorsel dosyalari da gecerli link hedefi
+for (const f of await readdir("assets/fonts")) known.add("/fonts/" + f);
+try { for (const f of await readdir("assets/img")) known.add("/img/" + f); } catch {}
 const linkedTo = new Set();
 let linkTotal = 0;
 

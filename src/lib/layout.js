@@ -203,9 +203,8 @@ export function page(o) {
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/fonts/saira-condensed-700-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-400-latin.woff2" crossorigin>
 <link rel="stylesheet" href="/styles.css?v=__CSSV__">
 ${o.noindex ? "" : graph(nodes)}
 ${o.extraHead || ""}
