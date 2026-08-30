@@ -64,7 +64,8 @@ Her iki yolda da build, SEO kontrollerinden geçmezse `exit 1` verir ve
 ### GitHub Pages önizlemesi
 
 `.github/workflows/pages.yml` her push'ta siteyi
-`https://dikeckaan.github.io/bektasotokurtarma/` adresine de gönderir.
+`https://kaandikec.com/bektasotokurtarma/` adresine de gönderir
+(adres `configure-pages` adımından okunur, sabit yazılmaz).
 Bu bir **önizleme**: asıl site cekici.online.
 
 - Pages alt dizinde servis ettiği için build `BASE_PATH` ile çalışır,
@@ -75,7 +76,7 @@ Bu bir **önizleme**: asıl site cekici.online.
 Yerelde aynı çıktıyı almak için:
 
 ```bash
-BASE_PATH=/bektasotokurtarma SITE_ORIGIN=https://dikeckaan.github.io NOINDEX=1 npm run build
+BASE_PATH=/bektasotokurtarma SITE_ORIGIN=https://kaandikec.com NOINDEX=1 npm run build
 ```
 
 ### Ortam değişkenleri

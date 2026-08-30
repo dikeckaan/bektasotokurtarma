@@ -1,5 +1,8 @@
 # Önizleme yayını: her push'ta siteyi GitHub Pages'e gönderir.
-# Hedef: https://<kullanici>.github.io/<depo>/
+#
+# Adres sabit yazılmıyor: configure-pages adımı hesabın gerçek Pages
+# yapılandırmasını (özel alan adı dahil) okuyup origin ve base_path
+# değerlerini veriyor, build de onları kullanıyor.
 #
 # Pages alt dizinde servis ettiği için BASE_PATH ile tüm kök-göreli
 # bağlar öneklenir. NOINDEX=1 çünkü asıl site cekici.online — aynı
@@ -32,14 +35,16 @@ jobs:
         with:
           node-version: 22
 
+      - name: Pages yapılandırmasını oku
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Siteyi üret (alt dizin + noindex)
         env:
-          BASE_PATH: /${{ github.event.repository.name }}
-          SITE_ORIGIN: https://${{ github.repository_owner }}.github.io
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          SITE_ORIGIN: ${{ steps.pages.outputs.origin }}
           NOINDEX: "1"
         run: node build.mjs
-
-      - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
