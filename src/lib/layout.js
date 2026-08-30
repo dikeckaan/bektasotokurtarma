@@ -162,7 +162,8 @@ export function footer() {
 
 /**
  * Tum sayfalarin kabugu.
- * @param {{title,description,path,body,breadcrumbs?,schema?,current?,ogType?}} o
+ * @param {{title,description,path,body,breadcrumbs?,schema?,current?,ogType?,
+ *          noindex?:boolean,extraHead?:string,bare?:boolean}} o
  */
 export function page(o) {
   const canonical = site.origin + o.path;
@@ -182,7 +183,7 @@ export function page(o) {
 <title>${esc(o.title)}</title>
 <meta name="description" content="${metaText(o.description)}">
 <link rel="canonical" href="${canonical}">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="robots" content="${o.noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1"}">
 <meta name="theme-color" content="#0C0E11">
 <meta name="geo.region" content="TR-34">
 <meta name="geo.placename" content="İstanbul Anadolu Yakası">
@@ -206,7 +207,8 @@ export function page(o) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css?v=__CSSV__">
-${graph(nodes)}
+${o.noindex ? "" : graph(nodes)}
+${o.extraHead || ""}
 </head>
 <body>
 <a class="sr-only" href="#icerik">İçeriğe geç</a>
@@ -215,8 +217,8 @@ ${bc.length > 1 ? crumbs(bc) : ""}
 <main id="icerik">
 ${o.body}
 </main>
-${footer()}
-${callbar()}
+${o.bare ? "" : footer()}
+${o.bare ? "" : callbar()}
 </body>
 </html>`;
 }

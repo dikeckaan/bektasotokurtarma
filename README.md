@@ -202,6 +202,51 @@ Hizmete `combo: true` verirsen 14 ilçe için kesişim sayfası da üretilir.
 
 ---
 
+## /duzenle/ — site bilgisi düzenleyici
+
+`https://cekici.online/duzenle/`
+
+Marka, telefon, adres, rakamlar, profiller, fotoğraf yolları, menü, ödeme
+yöntemleri, güven maddeleri ve adımları form üzerinden düzenleyip
+`site.js` dosyasını indirmenizi sağlayan araç sayfası.
+
+**Nasıl kullanılır**
+
+1. Sayfayı aç, alanları doldur
+2. **site.js indir** düğmesine bas
+3. İnen dosyayı depodaki `src/data/site.js` ile değiştir
+4. Commit + push → 117 sayfa birden güncellenir
+
+**Bilinmesi gerekenler**
+
+- Sayfa hiçbir şey kaydetmez ve siteyi değiştirmez; sadece tarayıcıda dosya
+  üretir. Değişiklik ancak dosya depoya girip push edilince yayına çıkar.
+  Bu yüzden sayfanın herkese açık olması bir güvenlik sorunu değil.
+- `noindex, nofollow` + `robots.txt` içinde `Disallow: /duzenle/`;
+  sitemap'e girmez ve hiçbir sayfadan link almaz.
+- Telefonu bir kez yazarsınız: `tel:` linki, WhatsApp numarası ve
+  schema.org biçimi tek girdiden üretilir.
+- Yazdıklarınız tarayıcıda taslak olarak saklanır (`localStorage`);
+  **Yayındaki hâline dön** taslağı siler.
+- Sağdaki kontrol listesi tutarsızlıkları söyler: geçersiz telefon,
+  puansız değerlendirme sayısı, doğrulandı işaretli ama eksik adres.
+
+**Kod tekrarı yok:** dosyayı üreten fonksiyon `src/lib/site-serialize.js`
+içinde. Sayfa bu fonksiyonun kaynağını `toString()` ile gömüyor, testler de
+aynı fonksiyonu çağırıyor — yani tarayıcıdaki üretici ile test edilen kod
+birebir aynı.
+
+## Testler
+
+```bash
+npm test
+```
+
+`test/site-serialize.test.mjs`: üretilen `site.js` diske yazılıp gerçek bir
+ES modülü olarak import ediliyor ve mevcut veriyle alan alan karşılaştırılıyor.
+Telefon biçimlendirme, kaçış gerektiren metinler ve `null` değerler ayrıca
+test ediliyor. Her iki iş akışı da build'den önce bu testleri çalıştırır.
+
 ## Görseller
 
 Fotoğraf yokken site boş görünmüyor: her fotoğraf alanında markanın kendi

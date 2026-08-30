@@ -8,7 +8,8 @@
     "build": "node build.mjs",
     "dev": "node build.mjs && wrangler dev",
     "deploy": "node build.mjs && wrangler deploy",
-    "preview": "node build.mjs && npx serve dist"
+    "preview": "node build.mjs && npx serve dist",
+    "test": "node test/site-serialize.test.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.127.1"

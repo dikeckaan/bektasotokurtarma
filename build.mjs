@@ -15,6 +15,7 @@ import { districtPages } from "./src/pages/district.js";
 import { servicePages } from "./src/pages/service.js";
 import { comboPages } from "./src/pages/combo.js";
 import { staticPages } from "./src/pages/static.js";
+import { editPage } from "./src/pages/edit.js";
 
 const OUT = "dist";
 const t0 = Date.now();
@@ -54,6 +55,7 @@ const pages = [
   ...servicePages(),
   ...districtPages(),
   ...comboPages(),
+  editPage(),
 ];
 
 /* ------------------------------------------------------------ dogrulama */
@@ -115,6 +117,9 @@ function finalize(html) {
 
 for (const p of pages) {
   const html = finalize(p.html);
+  // Doldurulmamis sablon yer tutucusu kalmasin (ornek: __SERIALIZE_FN__)
+  const leftover = html.match(/__[A-Z][A-Z0-9_]*__/);
+  if (leftover) problems.push(`Doldurulmamis yer tutucu ${leftover[0]}: ${p.path}`);
   const size = await write(fileFor(p.path), html);
   bytes += size;
   if (size > largest.size) largest = { path: p.path, size };
@@ -132,7 +137,7 @@ const priorityFor = (p) => {
 };
 
 const urls = pages
-  .filter((p) => !p.path.endsWith(".html"))
+  .filter((p) => !p.path.endsWith(".html") && !p.noindex)
   .map((p) => `  <url>
     <loc>${site.origin}${BASE}${p.path}</loc>
     <lastmod>${today}</lastmod>
@@ -146,9 +151,11 @@ ${urls}
 </urlset>
 `);
 
+const disallow = pages.filter((p) => p.noindex && !p.path.endsWith(".html"))
+  .map((p) => `Disallow: ${BASE}${p.path}`).join("\n");
 await write("robots.txt", NOINDEX
   ? `User-agent: *\nDisallow: /\n`
-  : `User-agent: *\nAllow: /\n\nSitemap: ${site.origin}${BASE}/sitemap.xml\n`);
+  : `User-agent: *\nAllow: /\n${disallow ? disallow + "\n" : ""}\nSitemap: ${site.origin}${BASE}/sitemap.xml\n`);
 
 /* --------------------------------------------------------------- ikon */
 
@@ -391,7 +398,7 @@ for (const p of pages) {
   }
 }
 for (const p of pages) {
-  if (p.path !== "/" && !p.path.endsWith(".html") && !linkedTo.has(p.path)) {
+  if (p.path !== "/" && !p.path.endsWith(".html") && !p.noindex && !linkedTo.has(p.path)) {
     problems.push(`Hicbir sayfadan link almiyor: ${p.path}`);
   }
 }

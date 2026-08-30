@@ -33,6 +33,9 @@ jobs:
 
       # Site üretimi hiçbir pakete bağlı değil — sadece Node.
       # build.mjs SEO kontrollerinde sorun bulursa exit 1 verir ve deploy durur.
+      - name: Testler
+        run: npm test
+
       - name: Siteyi üret
         run: node build.mjs
 

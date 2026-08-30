@@ -39,6 +39,9 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      - name: Testler
+        run: npm test
+
       - name: Siteyi üret (alt dizin + noindex)
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
