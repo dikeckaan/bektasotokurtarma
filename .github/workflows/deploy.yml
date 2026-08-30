@@ -36,12 +36,22 @@ jobs:
       - name: Siteyi üret
         run: node build.mjs
 
-      - name: Secret uyarısı
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN == '' }}
-        run: echo "::warning::CLOUDFLARE_API_TOKEN tanımlı değil, Cloudflare deploy atlandı."
+      # secrets bağlamı adım seviyesindeki if içinde kullanılamıyor;
+      # değeri önce env'e alıp kabuk içinde kontrol ediyoruz.
+      - name: Secret kontrolü
+        id: secrets
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CF_TOKEN" ]; then
+            echo "hazir=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "hazir=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::CLOUDFLARE_API_TOKEN tanımlı değil, Cloudflare deploy atlandı."
+          fi
 
       - name: Cloudflare Workers'a yayınla
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        if: steps.secrets.outputs.hazir == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
