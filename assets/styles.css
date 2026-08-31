@@ -360,6 +360,76 @@ a.card:hover{border-color:var(--amber);text-decoration:none;transform:translateY
 button.btn{font-family:var(--f-disp);cursor:pointer;border:1px solid transparent}
 button.btn[disabled]{background:#2A2F37;color:#6E757F;cursor:progress}
 
+/* ---------- Arıza rehberi ---------- */
+.hero--rehber .hero-in{max-width:900px}
+.hero--rehber .eyebrow a{color:var(--amber)}
+.rehber-govde{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:34px;align-items:start}
+@media (max-width:940px){.rehber-govde{grid-template-columns:1fr}}
+.rehber-govde .prose{max-width:none}
+.rehber-yan{display:grid;gap:16px;position:sticky;top:82px}
+@media (max-width:940px){.rehber-yan{position:static}}
+.rehber-yan .card{gap:12px}
+.rehber-yan .btn{width:100%;font-size:17px;padding:11px 16px}
+.yan-liste{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14.5px}
+.yan-liste a{color:var(--body)}
+.yan-liste a:hover{color:var(--amber)}
+
+/* Kısa cevap kutusu — sayfanın en önemli parçası */
+.cevap{
+  border:1px solid var(--line);border-left-width:3px;border-radius:3px;
+  background:var(--panel-2);padding:22px;margin:0 0 30px;
+}
+.cevap--dur{border-left-color:var(--danger)}
+.cevap--dikkat{border-left-color:var(--amber)}
+.cevap--planla{border-left-color:var(--ok)}
+.cevap-ust{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.cevap-rozet{
+  font-family:var(--f-disp);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  padding:5px 12px;border-radius:2px;
+}
+.cevap--dur .cevap-rozet{background:rgba(255,107,74,.16);color:var(--danger)}
+.cevap--dikkat .cevap-rozet{background:rgba(255,176,32,.16);color:var(--amber)}
+.cevap--planla .cevap-rozet{background:rgba(63,191,127,.16);color:var(--ok)}
+.cevap-ust-not{font-size:13.5px;color:var(--mut)}
+.cevap-ozet{font-size:18px;color:var(--paper);margin:0 0 16px;line-height:1.5}
+.cevap-dl{margin:0;padding-top:16px;border-top:1px solid var(--line)}
+.cevap-dl dt{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:7px;font-weight:600}
+.cevap-dl dd{margin:0;font-size:15.5px;color:var(--body);line-height:1.6}
+.cevap-dl dd b{color:var(--paper)}
+
+.pill{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:2px;white-space:nowrap}
+.pill--ok{background:rgba(63,191,127,.14);color:var(--ok)}
+.pill--warn{background:rgba(255,176,32,.14);color:var(--amber)}
+.pill--bad{background:rgba(255,107,74,.14);color:var(--danger)}
+
+ul.crosses{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+ul.crosses li{position:relative;padding-left:28px;font-size:16px}
+ul.crosses li::before,ul.crosses li::after{
+  content:"";position:absolute;left:2px;top:.72em;width:13px;height:2px;background:var(--danger);
+}
+ul.crosses li::before{transform:rotate(45deg)}
+ul.crosses li::after{transform:rotate(-45deg)}
+
+.rehber-liste{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.rehber-liste a{
+  display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:center;
+  background:var(--panel-2);padding:16px 20px;color:inherit;transition:background .14s ease;
+}
+.rehber-liste a:hover{background:#20252D;text-decoration:none}
+.rl-ad{font-family:var(--f-disp);font-size:19px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--paper);line-height:1.15}
+.rl-soru{grid-column:1;font-size:14.5px;color:var(--mut)}
+.rl-rozet{
+  grid-row:1/3;grid-column:2;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 10px;border-radius:2px;white-space:nowrap;
+}
+.rl-rozet--dur{background:rgba(255,107,74,.14);color:var(--danger)}
+.rl-rozet--dikkat{background:rgba(255,176,32,.14);color:var(--amber)}
+.rl-rozet--planla{background:rgba(63,191,127,.14);color:var(--ok)}
+@media (max-width:560px){
+  .rehber-liste a{grid-template-columns:1fr}
+  .rl-rozet{grid-row:auto;grid-column:1;justify-self:start}
+}
+
 /* ---------- Etiket / rozet ---------- */
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{

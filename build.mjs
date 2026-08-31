@@ -17,6 +17,7 @@ import { comboPages } from "./src/pages/combo.js";
 import { staticPages } from "./src/pages/static.js";
 import { editPage } from "./src/pages/edit.js";
 import { etaPage } from "./src/pages/eta.js";
+import { rehberPages } from "./src/pages/rehber.js";
 import { llmsTxt, llmsFullTxt } from "./src/lib/llms.js";
 import { indexNowKey } from "./src/data/indexnow.js";
 
@@ -58,6 +59,7 @@ const pages = [
   ...servicePages(),
   ...districtPages(),
   ...comboPages(),
+  ...rehberPages(),
   etaPage(),
   editPage(),
 ];
@@ -459,6 +461,7 @@ console.log(`    kurumsal      ${staticPages().length}`);
 console.log(`    hizmet        ${servicePages().length}`);
 console.log(`    ilce          ${districtPages().length}`);
 console.log(`    ilce+hizmet   ${comboPages().length}`);
+console.log(`    ariza rehberi ${rehberPages().length}`);
 console.log(`  HTML toplam     ${kb(bytes)}  (ort. ${kb(bytes / pages.length)}/sayfa)`);
 console.log(`  En buyuk sayfa  ${largest.path} — ${kb(largest.size)}`);
 console.log(`  CSS             ${kb(css.length)}  (surum ${cssv})`);

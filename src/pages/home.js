@@ -2,6 +2,7 @@ import { site, trustPoints, steps } from "../data/site.js";
 import { districts } from "../data/districts.js";
 import { sortedServices } from "../data/services.js";
 import { generalFaq } from "../data/faq.js";
+import { rehber, kategoriler } from "../data/rehber.js";
 import { page, ctaBand, districtGrid, serviceCards, faqBlock, links } from "../lib/layout.js";
 import { esc, mkTitle } from "../lib/util.js";
 import { photo, truckIllus } from "../lib/media.js";
@@ -72,6 +73,31 @@ export function homePage() {
     </div>
     ${districtGrid(districts)}
     <p style="margin-top:22px"><a href="/varis-suresi/"><b>Çekici size kaç dakikada ulaşır?</b></a> — konumunuzu paylaşın ya da haritadan ilçenizi seçin.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Arıza rehberi</span>
+      <h2>Ne olduğunu bilmiyorsanız önce buraya bakın</h2>
+      <p class="lede">Panelde yanan lamba, duyduğunuz ses ya da altınızdaki leke ne anlatıyor? ${rehber.length} konuda net cevap: araç sürülebilir mi, çekici mi gerekir?</p>
+    </div>
+    <div class="grid grid--3">
+      ${kategoriler.map((k) => `
+      <a class="card" href="/rehber/${k.slug}/">
+        <h3>${esc(k.ad)}</h3>
+        <p>${esc(k.ozet)}</p>
+        <span class="price">${rehber.filter((r) => r.kategori === k.slug).length} konu</span>
+        <span class="more">İncele →</span>
+      </a>`).join("")}
+    </div>
+    <p style="margin-top:22px" class="muted">En çok bakılanlar:
+      ${["mars-donmuyor-tik-sesi", "hararet-yapiyor", "motor-ariza-lambasi", "otomatik-vites-cekilir-mi", "yanlis-yakit-aldim"]
+        .map((sl) => rehber.find((r) => r.slug === sl))
+        .filter(Boolean)
+        .map((r) => `<a href="/rehber/${r.slug}/">${esc(r.h1)}</a>`).join(" · ")}
+    </p>
   </div>
 </section>
 

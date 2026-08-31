@@ -12,6 +12,7 @@ import { site } from "../data/site.js";
 import { districts } from "../data/districts.js";
 import { sortedServices, comboServices } from "../data/services.js";
 import { generalFaq, priceTable } from "../data/faq.js";
+import { rehber, kategoriler } from "../data/rehber.js";
 import { etaText, list } from "./util.js";
 
 const u = (p) => site.origin + p;
@@ -60,6 +61,18 @@ export function llmsTxt() {
     L.push(`- ${d.name}: ` + comboServices.map((s) => `[${s.comboLabel}](${u(`/${d.slug}-${s.slug}/`)})`).join(", "));
   });
   L.push("");
+  L.push("## Arıza rehberi");
+  L.push("");
+  L.push(`Belirtiden arızaya: ${rehber.length} konu, ${rehber.reduce((a, r) => a + r.faq.length, 0)} soru-cevap. Her sayfa "araç sürülebilir mi" ve "çekici gerekir mi" sorularını net cevaplıyor.`);
+  L.push("");
+  kategoriler.forEach((k) => {
+    L.push(`### ${k.ad} — [${u(`/rehber/${k.slug}/`)}](${u(`/rehber/${k.slug}/`)})`);
+    L.push("");
+    rehber.filter((r) => r.kategori === k.slug).forEach((r) => {
+      L.push(`- [${r.h1}](${u(`/rehber/${r.slug}/`)}): ${r.soru} **Kısa cevap:** ${r.ozet} Araç sürülebilir mi: ${r.surulebilir.karar}.`);
+    });
+    L.push("");
+  });
   L.push("## Kurumsal");
   L.push("");
   L.push(`- [Fiyatlar](${u("/fiyatlar/")}): başlangıç fiyatları ve fiyatlandırma kuralları`);
@@ -150,6 +163,42 @@ export function llmsFullTxt() {
   priceTable.forEach(([a, b, c]) => L.push(`| ${a} | ${b} | ${c} |`));
   L.push("");
 
+  L.push("---");
+  L.push("");
+  L.push("## Arıza rehberi");
+  L.push("");
+  L.push("Belirtiden arızaya giden ayrıntılı rehber. Her başlık tek bir soruyu cevaplar.");
+  L.push("");
+  kategoriler.forEach((k) => {
+    L.push(`## ${k.ad}`);
+    L.push("");
+    rehber.filter((r) => r.kategori === k.slug).forEach((r) => {
+      L.push(`### ${r.h1}`);
+      L.push("");
+      L.push(`Soru: ${r.soru}`);
+      L.push(`URL: ${u(`/rehber/${r.slug}/`)}`);
+      L.push(`Kısa cevap: ${r.ozet}`);
+      L.push(`Araç sürülebilir mi: **${r.surulebilir.karar}** — ${r.surulebilir.aciklama}`);
+      L.push("");
+      r.aciklama.forEach((par) => { L.push(par); L.push(""); });
+      L.push("**Muhtemel sebepler:**");
+      L.push("");
+      L.push("| Sebep | Nasıl anlaşılır | Nerede çözülür |");
+      L.push("| --- | --- | --- |");
+      const ETIKET = { yerinde: "Yerinde çözülür", servis: "Servis işi", cekici: "Çekici gerekir" };
+      r.sebepler.forEach((x) => L.push(`| ${x.ad} | ${x.isaret} | ${ETIKET[x.cozum]} |`));
+      L.push("");
+      L.push("**Ne yapmalı:**");
+      r.yapilacaklar.forEach((y) => L.push(`- ${y}`));
+      L.push("");
+      L.push("**Ne yapmamalı:**");
+      r.yapilmayacaklar.forEach((y) => L.push(`- ${y}`));
+      L.push("");
+      L.push(`**Ne zaman çekici gerekir:** ${r.cekiciNe}`);
+      L.push("");
+      r.faq.forEach(([q, a]) => { L.push(`**S: ${q}**`); L.push(`C: ${a}`); L.push(""); });
+    });
+  });
   L.push("---");
   L.push("");
   L.push("## Sık sorulan sorular");
