@@ -18,6 +18,8 @@ import { staticPages } from "./src/pages/static.js";
 import { editPage } from "./src/pages/edit.js";
 import { etaPage } from "./src/pages/eta.js";
 import { rehberPages } from "./src/pages/rehber.js";
+import { offlinePage } from "./src/pages/offline.js";
+import { rehber } from "./src/data/rehber.js";
 import { llmsTxt, llmsFullTxt } from "./src/lib/llms.js";
 import { indexNowKey } from "./src/data/indexnow.js";
 
@@ -62,6 +64,7 @@ const pages = [
   ...rehberPages(),
   etaPage(),
   editPage(),
+  offlinePage(),
 ];
 
 /* ------------------------------------------------------------ dogrulama */
@@ -433,6 +436,145 @@ function encodePng(px, W, H) {
 }
 
 await write("og.png", ogPng());
+
+/* ------------------------------------------------------------------ PWA
+ * Amac magaza uygulamasi degil: ana ekrana eklenebilen, ariza rehberini
+ * cevrimdisi acabilen bir site. Yolda kalan kisi cogu zaman cekmeyen bir
+ * yerde oluyor; o an rehberin acilmasi gercek bir fark yaratiyor.
+ */
+
+await write("icon-192.png", chevronPng(192));
+await write("icon-512.png", chevronPng(512));
+
+await write("manifest.webmanifest", JSON.stringify({
+  name: site.name,
+  short_name: site.shortName,
+  description: site.tagline,
+  lang: "tr-TR",
+  dir: "ltr",
+  start_url: BASE + "/?kaynak=pwa",
+  scope: BASE + "/",
+  display: "standalone",
+  orientation: "portrait",
+  background_color: "#0C0E11",
+  theme_color: "#0C0E11",
+  categories: ["business", "travel", "utilities"],
+  icons: [
+    { src: BASE + "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+    { src: BASE + "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+    { src: BASE + "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+  ],
+  shortcuts: [
+    { name: "Hemen ara", short_name: "Ara", url: `tel:${site.phoneHref}` },
+    { name: "Arıza rehberi", short_name: "Rehber", url: BASE + "/rehber/" },
+    { name: "Varış süresi", short_name: "Süre", url: BASE + "/varis-suresi/" },
+  ],
+}, null, 2));
+
+// Cevrimdisi kullanilacak sayfalar
+const KABUK = [
+  "/", "/iletisim/", "/rehber/", "/cevrimdisi/", "/varis-suresi/",
+  "/rehber/uyari-lambalari/", "/rehber/belirtiler/", "/rehber/yol-durumlari/",
+  `/styles.css?v=${cssv}`, "/favicon.svg", "/icon-192.png",
+  "/fonts/saira-condensed-700-latin.woff2", "/fonts/saira-condensed-600-latin.woff2",
+  "/fonts/barlow-400-latin.woff2", "/fonts/barlow-500-latin.woff2", "/fonts/barlow-600-latin.woff2",
+  "/fonts/saira-condensed-700-latin-ext.woff2", "/fonts/saira-condensed-600-latin-ext.woff2",
+  "/fonts/barlow-400-latin-ext.woff2", "/fonts/barlow-500-latin-ext.woff2", "/fonts/barlow-600-latin-ext.woff2",
+].map((u) => BASE + u);
+
+const REHBER_URL = rehber.map((r) => `${BASE}/rehber/${r.slug}/`);
+
+await write("sw.js", `/**
+ * Servis calisani — ${site.name}
+ * Surum ${cssv} · uretildi, elle duzenlemeyin (build.mjs)
+ *
+ * Strateji:
+ *   sayfalar  -> once ag (3 sn), olmazsa onbellek, o da yoksa /cevrimdisi/
+ *   dosyalar  -> once onbellek (surumlu oldugu icin guvenli)
+ * Ariza rehberi kurulumdan sonra arka planda indirilir; yolda kalan kisi
+ * cekmeyen bir yerdeyken de okuyabilsin diye.
+ */
+const SURUM = ${JSON.stringify(cssv)};
+const ONBELLEK = "bektas-" + SURUM;
+const KABUK = ${JSON.stringify(KABUK)};
+const REHBER = ${JSON.stringify(REHBER_URL)};
+const CEVRIMDISI = ${JSON.stringify(BASE + "/cevrimdisi/")};
+const KOK = ${JSON.stringify(BASE)};
+
+self.addEventListener("install", (e) => {
+  e.waitUntil((async () => {
+    const c = await caches.open(ONBELLEK);
+    await Promise.allSettled(KABUK.map((u) => c.add(new Request(u, { cache: "reload" }))));
+    self.skipWaiting();
+  })());
+});
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil((async () => {
+    for (const ad of await caches.keys()) {
+      if (ad.startsWith("bektas-") && ad !== ONBELLEK) await caches.delete(ad);
+    }
+    await self.clients.claim();
+    // Rehberi arka planda indir; veri tasarrufu aciksa atla
+    const c = await caches.open(ONBELLEK);
+    for (const u of REHBER) {
+      try { if (!(await c.match(u))) await c.add(new Request(u, { cache: "reload" })); } catch {}
+    }
+  })());
+});
+
+self.addEventListener("message", (e) => {
+  if (e.data === "guncelle") self.skipWaiting();
+});
+
+const statikMi = (p) => /\\.(css|woff2|png|svg|ico|jpg|jpeg|webp|avif)$/.test(p);
+
+self.addEventListener("fetch", (e) => {
+  const istek = e.request;
+  if (istek.method !== "GET") return;
+
+  const url = new URL(istek.url);
+  if (url.origin !== self.location.origin) return;
+  // Yonetim araci ve Cloudflare uc noktalari onbellege alinmaz
+  if (url.pathname.startsWith(KOK + "/duzenle/") || url.pathname.startsWith("/cdn-cgi/")) return;
+
+  if (istek.mode === "navigate") {
+    e.respondWith((async () => {
+      try {
+        const denetleyici = new AbortController();
+        const zaman = setTimeout(() => denetleyici.abort(), 3000);
+        const cevap = await fetch(istek, { signal: denetleyici.signal });
+        clearTimeout(zaman);
+        if (cevap.ok) {
+          const c = await caches.open(ONBELLEK);
+          c.put(istek, cevap.clone());
+        }
+        return cevap;
+      } catch {
+        return (await caches.match(istek)) || (await caches.match(CEVRIMDISI)) ||
+          new Response("Bağlantı yok", { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } });
+      }
+    })());
+    return;
+  }
+
+  if (statikMi(url.pathname)) {
+    e.respondWith((async () => {
+      const onbellekten = await caches.match(istek);
+      if (onbellekten) return onbellekten;
+      try {
+        const cevap = await fetch(istek);
+        if (cevap.ok) (await caches.open(ONBELLEK)).put(istek, cevap.clone());
+        return cevap;
+      } catch {
+        return new Response("", { status: 504 });
+      }
+    })());
+  }
+});
+
+
+`);
 
 
 /* ------------------------------------------------------- ic link kontrolu */

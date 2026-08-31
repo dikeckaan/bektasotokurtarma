@@ -72,6 +72,14 @@ export default {
       // HTML: kisa tarayici cache'i, uzun kenar cache'i (deploy'da purge olur).
       headers.set("Cache-Control", "public, max-age=0, must-revalidate");
       headers.set("CDN-Cache-Control", "public, max-age=3600");
+    } else if (url.pathname === "/sw.js") {
+      // Servis calisani asla uzun sureli cache'lenmemeli; yoksa guncelleme
+      // hic ulasmaz ve ziyaretci eski siteye kilitlenir.
+      headers.set("Cache-Control", "public, max-age=0, must-revalidate");
+      headers.set("Service-Worker-Allowed", "/");
+    } else if (url.pathname === "/manifest.webmanifest") {
+      headers.set("Content-Type", "application/manifest+json; charset=utf-8");
+      headers.set("Cache-Control", "public, max-age=3600");
     } else if (/\.(css|js|woff2|png|jpg|jpeg|webp|avif|svg|ico)$/.test(url.pathname)) {
       headers.set("Cache-Control", "public, max-age=31536000, immutable");
     }

@@ -204,6 +204,10 @@ export function page(o) {
 <meta name="twitter:image" content="${site.origin}/og.png">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="${esc(site.shortName)}">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" as="font" type="font/woff2" href="/fonts/saira-condensed-700-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-400-latin.woff2" crossorigin>
@@ -220,6 +224,7 @@ ${o.body}
 </main>
 ${o.bare ? "" : footer()}
 ${o.bare ? "" : callbar()}
+<script>if("serviceWorker"in navigator)addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})})</script>
 </body>
 </html>`;
 }

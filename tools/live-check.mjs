@@ -60,7 +60,28 @@ const anaSayfa = await (await fetch(base + "/")).text();
 kontrol("ana sayfa canonical doğru", anaSayfa.includes(`<link rel="canonical" href="${site.origin}/">`));
 kontrol("ana sayfa telefonu doğru", anaSayfa.includes(`tel:${site.phoneHref}`));
 
-/* 7. Arama motoru dogrulama dosyalari — silinirse panel erisimi duser */
+/* 7. PWA — ana ekrana eklenebilirlik ve cevrimdisi */
+const man = await fetch(base + "/manifest.webmanifest");
+kontrol("manifest.webmanifest erişilebilir", man.status === 200, `HTTP ${man.status}`);
+if (man.status === 200) {
+  const m = await man.json().catch(() => null);
+  kontrol("manifest geçerli JSON ve zorunlu alanları var",
+    !!(m && m.name && m.start_url && m.display && m.icons?.length >= 2));
+}
+const sw = await fetch(base + "/sw.js");
+kontrol("sw.js erişilebilir", sw.status === 200, `HTTP ${sw.status}`);
+// Servis calisani uzun sureli cache'lenirse guncelleme ziyaretciye hic ulasmaz
+kontrol("sw.js uzun süreli cache'lenmiyor",
+  !/immutable|max-age=(?!0)\d{3,}/.test(sw.headers.get("cache-control") || ""),
+  sw.headers.get("cache-control"));
+for (const ikon of ["/icon-192.png", "/icon-512.png"]) {
+  const r = await fetch(base + ikon);
+  kontrol(`${ikon} erişilebilir`, r.status === 200, `HTTP ${r.status}`);
+}
+const cev = await fetch(base + "/cevrimdisi/");
+kontrol("/cevrimdisi/ hazır", cev.status === 200, `HTTP ${cev.status}`);
+
+/* 8. Arama motoru dogrulama dosyalari — silinirse panel erisimi duser */
 const { readdir, readFile } = await import("node:fs/promises");
 let dogrulama = [];
 try { dogrulama = (await readdir("assets/root")).filter((f) => f !== "README.md"); } catch {}
@@ -74,7 +95,7 @@ for (const f of dogrulama) {
   kontrol(`/${f} içeriği doğru`, gelen === beklenen);
 }
 
-/* 8. Bulunmayan sayfa */
+/* 9. Bulunmayan sayfa */
 const yok = await fetch(base + "/boyle-bir-sayfa-yok/");
 kontrol("bilinmeyen yol 404 dönüyor", yok.status === 404, `HTTP ${yok.status}`);
 

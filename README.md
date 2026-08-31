@@ -295,6 +295,32 @@ ES modülü olarak import ediliyor ve mevcut veriyle alan alan karşılaştırı
 Telefon biçimlendirme, kaçış gerektiren metinler ve `null` değerler ayrıca
 test ediliyor. Her iki iş akışı da build'den önce bu testleri çalıştırır.
 
+## PWA — ana ekrana eklenebilir site
+
+Site bir Progressive Web App: telefonda "Ana ekrana ekle" ile uygulama gibi
+kurulur, tam ekran açılır ve **arıza rehberi internetsiz çalışır**.
+
+Bunun sebebi pratik: yolda kalan kişi çoğu zaman çekmeyen bir yerde oluyor.
+İlk ziyarette 47 rehber sayfası arka planda cihaza indiriliyor; bağlantı
+gitse bile "hararet yaptı ne yapmalıyım" sayfası açılıyor.
+
+| Dosya | Ne yapar |
+|---|---|
+| `manifest.webmanifest` | Uygulama adı, ikonlar, kısayollar (Ara / Rehber / Süre) |
+| `sw.js` | Servis çalışanı — build sırasında üretilir, elle düzenlenmez |
+| `/cevrimdisi/` | Bağlantı yokken gösterilen sayfa; telefon numarası ve kayıtlı rehber |
+| `icon-192.png`, `icon-512.png` | Koddan üretilen uygulama ikonları |
+
+**Önbellek stratejisi**
+
+- Sayfalar: önce ağ (3 sn zaman aşımı), olmazsa önbellek, o da yoksa `/cevrimdisi/`
+- Statik dosyalar: önce önbellek (sürümlü oldukları için güvenli)
+- Önbellek adı CSS sürüm hash'iyle etiketli; her deploy eskisini siler
+
+**Dikkat:** `sw.js` asla uzun süreli cache'lenmemeli, yoksa güncelleme
+ziyaretçiye hiç ulaşmaz ve eski siteye kilitlenirler. Worker bunu
+`max-age=0, must-revalidate` ile engelliyor ve `npm run canli` kontrol ediyor.
+
 ## Görseller
 
 Fotoğraf yokken site boş görünmüyor: her fotoğraf alanında markanın kendi
