@@ -97,6 +97,16 @@ await write("styles.css", css);
 // Gercek fotograflar: assets/img -> dist/img
 let photoCount = 0;
 await cp("assets/fonts", path.join(OUT, "fonts"), { recursive: true });
+
+// Kok klasor dosyalari (arama motoru dogrulamalari) — README haric
+let kokDosya = 0;
+try {
+  for (const f of await readdir("assets/root")) {
+    if (f === "README.md") continue;
+    await cp(path.join("assets/root", f), path.join(OUT, f));
+    kokDosya++;
+  }
+} catch {}
 try {
   await access("assets/img");
   await cp("assets/img", path.join(OUT, "img"), { recursive: true });
@@ -467,6 +477,7 @@ console.log(`  En buyuk sayfa  ${largest.path} — ${kb(largest.size)}`);
 console.log(`  CSS             ${kb(css.length)}  (surum ${cssv})`);
 console.log(`  Ic link         ${linkTotal} bagi, ${known.size} hedef`);
 console.log(`  Fotograf        ${photoCount} dosya${photoCount ? "" : " (cizim yer tutucular devrede)"}`);
+if (kokDosya) console.log(`  Kok dosya       ${kokDosya} (arama motoru dogrulamalari)`);
 console.log(`  llms.txt        ${(llmsBytes / 1024).toFixed(1)} KB (llms.txt + llms-full.txt)`);
 if (BASE) console.log(`  Taban yol       ${BASE}`);
 if (NOINDEX) console.log(`  Robots          noindex (onizleme yayini)`);

@@ -60,7 +60,18 @@ const anaSayfa = await (await fetch(base + "/")).text();
 kontrol("ana sayfa canonical doğru", anaSayfa.includes(`<link rel="canonical" href="${site.origin}/">`));
 kontrol("ana sayfa telefonu doğru", anaSayfa.includes(`tel:${site.phoneHref}`));
 
-/* 7. Bulunmayan sayfa */
+/* 7. Arama motoru dogrulama dosyalari — silinirse panel erisimi duser */
+const { readdir, readFile } = await import("node:fs/promises");
+let dogrulama = [];
+try { dogrulama = (await readdir("assets/root")).filter((f) => f !== "README.md"); } catch {}
+for (const f of dogrulama) {
+  const beklenen = (await readFile("assets/root/" + f, "utf8")).trim();
+  const r = await fetch(`${base}/${f}`);
+  const gelen = r.ok ? (await r.text()).trim() : "";
+  kontrol(`/${f} doğrulama dosyası yerinde`, gelen === beklenen, r.ok ? "içerik farklı" : `HTTP ${r.status}`);
+}
+
+/* 8. Bulunmayan sayfa */
 const yok = await fetch(base + "/boyle-bir-sayfa-yok/");
 kontrol("bilinmeyen yol 404 dönüyor", yok.status === 404, `HTTP ${yok.status}`);
 
