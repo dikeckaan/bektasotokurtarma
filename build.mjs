@@ -581,7 +581,8 @@ self.addEventListener("fetch", (e) => {
 
 const known = new Set(pages.map((p) => p.path));
 ["/styles.css", "/favicon.svg", "/apple-touch-icon.png", "/sitemap.xml", "/robots.txt",
- "/og.png", "/llms.txt", "/llms-full.txt"].forEach((f) => known.add(f));
+ "/og.png", "/llms.txt", "/llms-full.txt",
+ "/manifest.webmanifest", "/sw.js", "/icon-192.png", "/icon-512.png"].forEach((f) => known.add(f));
 // Font ve gorsel dosyalari da gecerli link hedefi
 for (const f of await readdir("assets/fonts")) known.add("/fonts/" + f);
 try { for (const f of await readdir("assets/img")) known.add("/img/" + f); } catch {}
