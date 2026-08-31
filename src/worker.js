@@ -41,8 +41,21 @@ export default {
       return Response.redirect(new URL(target, url).toString(), 301);
     }
 
-    // 3) Statik dosya.
-    const response = await env.ASSETS.fetch(request);
+    // 3) Kok klasordeki .html dosyalari (arama motoru dogrulamalari).
+    //    html_handling: "auto-trailing-slash" ayari /dosya.html adresini
+    //    /dosya adresine 307 ile yonlendiriyor. Dogrulayicilarin bir kismi
+    //    yonlendirme izlemedigi icin tam URL'de 200 donmesi gerekiyor:
+    //    istegi uzantisiz haliyle asset katmanina veriyoruz, cevabi
+    //    orijinal URL'de donduruyoruz.
+    let assetRequest = request;
+    if (/^\/[^/]+\.html$/.test(url.pathname) && url.pathname !== "/404.html") {
+      const uzantisiz = new URL(url);
+      uzantisiz.pathname = url.pathname.replace(/\.html$/, "");
+      assetRequest = new Request(uzantisiz, request);
+    }
+
+    // 4) Statik dosya.
+    const response = await env.ASSETS.fetch(assetRequest);
     const headers = new Headers(response.headers);
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) headers.set(key, value);
 

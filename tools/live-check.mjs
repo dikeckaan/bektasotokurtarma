@@ -66,9 +66,12 @@ let dogrulama = [];
 try { dogrulama = (await readdir("assets/root")).filter((f) => f !== "README.md"); } catch {}
 for (const f of dogrulama) {
   const beklenen = (await readFile("assets/root/" + f, "utf8")).trim();
-  const r = await fetch(`${base}/${f}`);
-  const gelen = r.ok ? (await r.text()).trim() : "";
-  kontrol(`/${f} doğrulama dosyası yerinde`, gelen === beklenen, r.ok ? "içerik farklı" : `HTTP ${r.status}`);
+  // Dogrulayicilarin bir kismi yonlendirme izlemiyor: tam URL'de 200 sart
+  const r = await fetch(`${base}/${f}`, { redirect: "manual" });
+  const gelen = r.status === 200 ? (await r.text()).trim() : "";
+  kontrol(`/${f} tam URL'de 200 dönüyor`, r.status === 200,
+    r.status === 307 || r.status === 301 ? `HTTP ${r.status} — yönlendiriyor, doğrulama başarısız olabilir` : `HTTP ${r.status}`);
+  kontrol(`/${f} içeriği doğru`, gelen === beklenen);
 }
 
 /* 8. Bulunmayan sayfa */
