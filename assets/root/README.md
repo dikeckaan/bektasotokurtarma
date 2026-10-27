@@ -10,6 +10,7 @@ doğrulama dosyaları buraya konur.
 | Dosya | Ne için |
 |---|---|
 | `yandex_9744c2f595308c07.html` | Yandex Webmaster site doğrulaması |
+| `googlea9862d7165ba2e3f.html` | Google Search Console site doğrulaması |
 
 ## Yeni doğrulama dosyası eklerken
 
