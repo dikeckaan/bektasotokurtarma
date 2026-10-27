@@ -1399,7 +1399,7 @@ export const rehber = [
     faq: [
       ["Reflektif yelek ve üçgen zorunlu mu?", "Evet, Türkiye'de araçta bulundurulması zorunludur ve araçtan inmeden önce yeleği giymek gerekir. Yelek bagajda değil, kabinde ulaşabileceğiniz yerde durmalıdır."],
       ["Otoyolda üçgen kaç metre geriye konur?", "Otoyol ve bölünmüş yollarda yaklaşık 150 metre, şehir içinde 30 metre. Amaç, arkadan gelen sürücünün fren mesafesinden önce uyarılmasıdır."],
-      ["Çekici ne kadar sürede gelir?", "Anadolu Yakası'nda ortalama 18 dakika; ilçeye göre 12-41 dakika arasında değişir. Konumunuzu paylaştığınızda size özel süreyi telefonda söyleriz."],
+      ["Çekici ne kadar sürede gelir?", "Garajımız Pendik'te; Pendik içinde tahminen 15 dakika civarında, komşu ilçelerde yarım saatin altında yanınızdayız. Konumunuzu paylaştığınızda size özel süreyi telefonda söyleriz."],
       ["Beklerken aracı çalıştırmayı denemeli miyim?", "İki-üç denemeden fazlası zarar verir: marş motoru ısınır, akü tükenir. Bir de yanlış yakıt veya triger şüphesi varsa çalıştırma denemesi hasarı büyütür."],
     ],
     ilgili: ["arac-stop-ediyor", "kaza-sonrasi-ne-yapmali", "otomatik-vites-cekilir-mi"],
@@ -1705,7 +1705,7 @@ export const rehber = [
     ciddiyet: "planla",
     surulebilir: { karar: "Araç hareket edemiyor", aciklama: "Kapalı otoparkta arıza yapan araç, standart kayar kasa çekiciyle alınamaz çünkü çekici içeri giremez. Bunun yerine kızaklı sistem kullanılır: araç tekerlekleri üzerinde kaydırılarak dışarı çıkarılır, çekiciye dışarıda yüklenir." },
     aciklama: [
-      "Anadolu Yakası'nda bu çağrılar en çok Bağdat Caddesi çevresindeki apartman otoparklarından, Ataşehir Finans Merkezi ve Ümraniye'deki plaza otoparklarından, ve AVM otoparklarından gelir. Bu yapıların giriş yüksekliği çoğunlukla 2 metrenin altındadır.",
+      "Pendik'te bu çağrılar en çok Sabiha Gökçen Havalimanı otoparklarından, Viaport, Neomarin ve Pendorya gibi AVM otoparklarından ve Kaynarca, Yenişehir, Kurtköy'deki site otoparklarından gelir. Bu yapıların giriş yüksekliği çoğunlukla 2 metrenin altındadır.",
       "İşin görünmeyen kısmı izindir. Site ve plaza otoparklarına giriş için yönetim veya güvenlikten izin gerekir; bazı yerlerde belirli saatlerde giriş yasaktır. Çağrıyı alırken bu bilgiyi de sormamızın sebebi budur — izinsiz gidip kapıda beklemek, hem sizin hem bizim zamanımızı harcar.",
     ],
     sebepler: [
@@ -1745,7 +1745,7 @@ export const rehber = [
     ciddiyet: "dur",
     surulebilir: { karar: "Hayır, çalıştırmayın bile", aciklama: "Su sıkıştırılamaz. Emme sisteminden silindire su girdiyse pistonun onu sıkıştırması mümkün değildir; marş basıldığı anda biyel kolu eğilir veya kırılır. Bu, aracı hurdaya çıkarabilecek bir hasardır ve çoğu zaman tek bir marş denemesiyle olur." },
     aciklama: [
-      "İstanbul'da şiddetli yağışlarda alt geçitler ve rampalı sokaklar hızla su tutar; Anadolu Yakası'nda bu çağrılar özellikle D-100 alt geçitleri ve Kadıköy-Maltepe hattındaki eğimli sokaklardan gelir.",
+      "İstanbul'da şiddetli yağışlarda alt geçitler ve rampalı sokaklar hızla su tutar; Pendik ve çevresinde bu çağrılar özellikle D-100 alt geçitleri, sahile inen eğimli sokaklar ve Kartal-Pendik hattındaki yan yollardan gelir.",
       "Kritik olan suyun ne kadar yükseldiğidir. Su hava filtresi seviyesine ulaştıysa motora su girmiş olma ihtimali yüksektir. Kapı eşiğini geçen su ise kabin elektroniğini ve koltuk altındaki modülleri etkiler.",
       "Sigorta açısından da doğru davranmak önemlidir: aracı çalıştırmaya çalışıp hasarı büyütmek, bazı poliçelerde tazminatı etkileyebilir. Suya giren araçta yapılacak ilk şey aracı çalıştırmamak ve şirketi aramaktır.",
     ],

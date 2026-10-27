@@ -301,16 +301,24 @@ a.card:hover{border-color:var(--amber);text-decoration:none;transform:translateY
   font-family:var(--f-body);font-size:13px;font-weight:600;fill:#0C0E11;opacity:.75;
   paint-order:stroke;stroke:rgba(255,255,255,.22);stroke-width:2;
 }
-.mp--b3 + .mp-lbl .mp-ad{fill:var(--paper)}
 /* Koyu zeminde veya harita disinda kalan etiketler acik renk */
-.mp-lbl[data-ilce="sile"] .mp-ad,.mp-lbl[data-ilce="beykoz"] .mp-ad,
-.mp-lbl[data-ilce="cekmekoy"] .mp-ad,.mp-lbl[data-ilce="adalar"] .mp-ad,
-.mp-lbl[data-ilce="tuzla"] .mp-ad,.mp-lbl[data-ilce="sultanbeyli"] .mp-ad,
-.mp-lbl[data-ilce="uskudar"] .mp-ad,.mp-lbl[data-ilce="kadikoy"] .mp-ad{fill:#F2F0EC;stroke:rgba(0,0,0,.5)}
-.mp-lbl[data-ilce="sile"] .mp-eta,.mp-lbl[data-ilce="beykoz"] .mp-eta,
-.mp-lbl[data-ilce="cekmekoy"] .mp-eta,.mp-lbl[data-ilce="adalar"] .mp-eta,
-.mp-lbl[data-ilce="tuzla"] .mp-eta,.mp-lbl[data-ilce="sultanbeyli"] .mp-eta,
-.mp-lbl[data-ilce="uskudar"] .mp-eta,.mp-lbl[data-ilce="kadikoy"] .mp-eta{fill:#C3C9D1;opacity:1}
+.mp-lbl--acik .mp-ad{fill:#F2F0EC;stroke:rgba(0,0,0,.5)}
+.mp-lbl--acik .mp-eta{fill:#C3C9D1;opacity:1}
+/* Pendik mahalle haritasi: daha cok ve daha kucuk bolge */
+.mp-lbl--mah .mp-ad{font-size:12.5px;letter-spacing:.02em}
+.mp-lbl--mah .mp-eta{font-size:11px}
+.map--pendik .mp{stroke-width:1.2}
+/* Yakin gorunum ~2,3 kat buyutulmus; SVG birimi cinsinden yazi kuculur */
+.map--yakin .mp{stroke-width:.6}
+.map--yakin .mp-lbl--mah .mp-ad{font-size:6px;stroke-width:1}
+.map--yakin .mp-lbl--mah .mp-eta{font-size:5.2px;stroke-width:.8}
+.map--yakin .mp-garaj-yazi{font-size:6.5px;stroke-width:1.3}
+.map--yakin .mp-garaj-hale{stroke-width:.7}
+.mp-garaj{pointer-events:none}
+.mp-garaj-hale{fill:rgba(12,14,17,.85);stroke:#F2F0EC;stroke-width:1.5}
+.mp-garaj-nokta{fill:#FFB020}
+.mp-garaj-yazi{font-family:var(--f-disp);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;fill:#F2F0EC;paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:3}
+.sw--garaj{background:#FFB020;border-radius:50%;box-shadow:0 0 0 3px #0C0E11,0 0 0 4px #F2F0EC}
 .mp-kilavuz{stroke:#5A6470;stroke-width:1.2;stroke-dasharray:3 3}
 
 .map-legend{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:16px;font-size:13.5px;color:var(--mut)}
@@ -325,9 +333,15 @@ a.card:hover{border-color:var(--amber);text-decoration:none;transform:translateY
 @media (max-width:1100px){
   .mp-ad{font-size:20px}
   .mp-eta{font-size:16px}
+  .mp-lbl--mah .mp-ad{font-size:15px}
+  .mp-lbl--mah .mp-eta{font-size:13px}
+  .map--yakin .mp-lbl--mah .mp-ad{font-size:7px}
+  .map--yakin .mp-lbl--mah .mp-eta{font-size:6px}
 }
 
 /* ---------- Varış süresi aracı ---------- */
+.eta-harita-baslik{font-size:clamp(18px,2vw,21px);margin:0 0 12px}
+.eta-map .mapwrap + .eta-harita-baslik{margin-top:32px}
 .eta-tool{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:var(--gap);align-items:start}
 @media (max-width:900px){.eta-tool{grid-template-columns:1fr}}
 .eta-panel{

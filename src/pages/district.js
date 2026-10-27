@@ -5,12 +5,14 @@ import { generalFaq } from "../data/faq.js";
 import { page, ctaBand, faqBlock, links } from "../lib/layout.js";
 import { esc, list, pick, etaText, mkTitle } from "../lib/util.js";
 import { faqSchema, serviceSchema } from "../lib/schema.js";
+import { mahalleler, yakindanUzaga } from "../data/mahalleler.js";
+import { pendikMapSvg } from "../lib/map.js";
 
 /* Ayni cumlenin 14 kez tekrarlanmamasi icin ilceye gore secilen acilislar. */
 const OPENERS = [
-  (d) => `${d.loc} aracınız yolda kaldığında tek yapmanız gereken telefonu açmak. ${d.name} sınırları içinde ortalama ${etaText(d)} içinde yanınızda oluyor, aracınızı kayar kasa çekiciyle istediğiniz servise ya da adrese götürüyoruz.`,
+  (d) => `${d.loc} aracınız yolda kaldığında tek yapmanız gereken telefonu açmak. ${d.name} sınırları içinde tahminen ${etaText(d)} içinde yanınızda oluyor, aracınızı kayar kasa çekiciyle istediğiniz servise ya da adrese götürüyoruz.`,
   (d) => `${d.name} ve çevresindeki çağrılara ${etaText(d)} içinde ulaşacak şekilde araç konumlandırdık. ${d.gen} hangi mahallesinde olursanız olun — ${list(d.mahalleler.slice(0, 3))} dahil — aynı gün, aynı saat farkı olmadan hizmet veriyoruz.`,
-  (d) => `${d.loc} 7/24 oto kurtarma ve yol yardım veriyoruz. Akü bitmesi, lastik patlaması ya da kaza sonrası kurtarma fark etmez; ${d.name} içindeki çağrılara ortalama ${etaText(d)} içinde yetişiyoruz.`,
+  (d) => `${d.loc} 7/24 oto kurtarma ve yol yardım veriyoruz. Akü bitmesi, lastik patlaması ya da kaza sonrası kurtarma fark etmez; ${d.name} içindeki çağrılara tahminen ${etaText(d)} içinde yetişiyoruz.`,
 ];
 
 const CLOSERS = [
@@ -18,6 +20,30 @@ const CLOSERS = [
   (d) => `${d.loc} verdiğimiz her hizmette taşıma sigortalıdır ve teslimde imzalı tutanak bırakırız. Aracınızın nasıl teslim alındığı ve nasıl bırakıldığı kayıt altındadır.`,
   (d) => `${d.name} içindeki taşımalarda kullandığımız araçlar K türü yetki belgeli, sürücülerimiz SRC belgelidir. Belgesiz çekici çalıştırmıyoruz.`,
 ];
+
+/** Pendik ilce sayfasi: 36 mahallenin haritasi ve her birinin sayfasina link. */
+function pendikMahalleBolumu() {
+  return `<div class="sec-head">
+      <span class="eyebrow">Kapsama</span>
+      <h2>Pendik'in ${mahalleler.length} mahallesi</h2>
+      <p class="lede">Haritada mahallenize dokunun ya da aşağıdaki listeden seçin. Her mahallenin sayfasında içinden geçen yollar, referans noktaları ve garajımıza göre tahmini varış süresi var.</p>
+    </div>
+    ${pendikMapSvg({ id: "pendik-harita" })}
+    <div class="table-scroll" style="margin-top:28px">
+      <table>
+        <caption>Pendik mahalleleri · garajdan tahmini varış, yakından uzağa</caption>
+        <thead><tr><th scope="col">Mahalle</th><th scope="col">Tahmini varış</th><th scope="col">Ana yol / referans</th></tr></thead>
+        <tbody>
+          ${yakindanUzaga.map((m) => `<tr>
+            <td><a href="${m.path}">${esc(m.ad)} çekici</a></td>
+            <td>${m.eta} dk</td>
+            <td class="muted">${esc([m.yollar[0], m.noktalar[0]?.ad].filter(Boolean).join(" · "))}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:22px"><a href="/sabiha-gokcen-havalimani-cekici/"><b>Sabiha Gökçen Havalimanı çekici</b></a> — otoparkta akü, lastik ve çekici</p>`;
+}
 
 export function districtPages() {
   return districts.map((d) => {
@@ -27,12 +53,14 @@ export function districtPages() {
     const localFaq = [
       [`${d.name} oto kurtarma ne kadar sürede geliyor?`,
        d.eta
-         ? `${d.name} içindeki çağrılara son üç ayın ortalamasına göre ${d.eta} dakikada ulaşıyoruz. ${d.landmark} çevresi ve ana arterlerde bu süre daha da kısalıyor. Çağrı anında size özel tahmini süreyi net olarak söylüyoruz.`
+         ? (d.slug === "pendik"
+           ? `Garajımız Pendik'te; mahallelerin yarısına ${d.eta} dakikanın altında ulaşıyoruz. Merkez ve sahil mahallelerinde süre ${yakindanUzaga[0].eta} dakikaya kadar iner, Ömerli tarafındaki köy mahallelerinde ${yakindanUzaga.at(-1).eta} dakikayı bulabilir. Çağrı anında size özel süreyi net olarak söylüyoruz.`
+           : `Pendik'teki garajımızdan ${d.name} merkezine yol mesafesi yaklaşık ${d.km} km; tahmini varışımız ${d.eta} dakika. ${d.landmark} çevresi ve ana arterlerde bu süre değişebilir; çağrı anında size özel süreyi net olarak söylüyoruz.`)
          : `${d.loc} taşıma feribot seferlerine bağlı olduğu için sabit bir varış süresi vermiyoruz. Çağrıyı aldığımızda ilk uygun sefer saatini birlikte belirliyoruz.`],
       [`${d.name} çekici ücreti ne kadar?`,
        `${d.name} içi taşımalar 1.500 ₺'den başlıyor. Kesin tutar aracınızın türüne ve gideceği adrese göre değişir; telefonda net rakamı söylüyoruz ve yola çıktıktan sonra değiştirmiyoruz.`],
       [`${d.gen} hangi mahallelerine geliyorsunuz?`,
-       `${d.name} sınırları içindeki tüm mahallelere geliyoruz: ${list(d.mahalleler)}. Site ve kapalı otopark girişlerinde izin gerekiyorsa çağrı sırasında bunu da not alıyoruz.`],
+       `${d.name} sınırları içindeki tüm ${d.slug === "pendik" ? `${d.mahalleler.length} mahalleye` : "mahallelere"} geliyoruz: ${list(d.mahalleler)}. Site ve kapalı otopark girişlerinde izin gerekiyorsa çağrı sırasında bunu da not alıyoruz.`],
       [`${d.loc} gece de hizmet veriyor musunuz?`,
        `Evet, ${d.name} dahil tüm Anadolu Yakası'nda 24 saat vardiyalı çalışıyoruz. Gece çağrıları için ek ücret uygulamıyoruz.`],
     ];
@@ -44,14 +72,14 @@ export function districtPages() {
   <div class="wrap">
     <div class="hero-in">
       <span class="eyebrow">İstanbul · Anadolu Yakası</span>
-      <h1>${esc(d.name)} Oto Kurtarma<br><em>7/24 çekici</em></h1>
+      <h1>${esc(d.name)} Oto Kurtarma<br><em>${d.slug === "pendik" ? `${mahalleler.length} mahallede 7/24` : "7/24 çekici"}</em></h1>
       <p class="lede">${esc(pick(OPENERS, d.slug + "a")(d))}</p>
       <div class="btn-row">
         <a class="btn" href="${links.tel}" data-track="tel-hero">Hemen ara: ${esc(site.phoneDisplay)}</a>
         <a class="btn btn--ghost" href="${links.wa}" rel="noopener" data-track="wa-hero">WhatsApp'tan konum gönder</a>
       </div>
       <p class="hero-note">
-        <span>${esc(d.name)} ortalama varış: ${esc(etaText(d))}</span>
+        <span>${esc(d.name)} tahmini varış: ${esc(etaText(d))}</span>
         <span>Sabit fiyat</span>
         <span>Sigortalı taşıma</span>
       </p>
@@ -71,7 +99,8 @@ export function districtPages() {
       <div class="local">
         <h3>${esc(d.name)} saha bilgisi</h3>
         <dl>
-          <dt>Ortalama varış</dt><dd>${esc(etaText(d))}</dd>
+          <dt>Tahmini varış</dt><dd>${esc(etaText(d))}</dd>
+          ${d.km ? `<dt>Garaja yol mesafesi</dt><dd>~${d.km} km (Pendik)</dd>` : ""}
           <dt>Ana arterler</dt><dd>${esc(list(d.arterler))}</dd>
           <dt>Referans nokta</dt><dd>${esc(d.landmark)}</dd>
           <dt>Çalışma saatleri</dt><dd>7 gün 24 saat, bayram dahil</dd>
@@ -104,12 +133,12 @@ export function districtPages() {
 
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head">
+    ${d.slug === "pendik" ? pendikMahalleBolumu() : `<div class="sec-head">
       <span class="eyebrow">Kapsama</span>
       <h2>${esc(d.name)} mahalleleri</h2>
-      <p class="lede">${esc(d.name)} sınırları içindeki tüm mahallelere aynı fiyat ve aynı sürede geliyoruz.</p>
+      <p class="lede">${esc(d.name)} sınırları içindeki tüm mahallelere aynı fiyatla geliyoruz.</p>
     </div>
-    <div class="chips">${d.mahalleler.map((m) => `<span class="chip">${esc(m)}</span>`).join("")}</div>
+    <div class="chips">${d.mahalleler.map((m) => `<span class="chip">${esc(m)}</span>`).join("")}</div>`}
     <div class="sec-head" style="margin-top:48px">
       <h2>Yakın ilçeler</h2>
     </div>
@@ -127,8 +156,10 @@ ${ctaBand(`${d.name} için çekici mi lazım?`, `${d.loc} ortalama ${etaText(d)}
       html: page({
         path,
         current: "/bolgeler/",
-        title: mkTitle(`${d.name} Oto Kurtarma – 7/24 Çekici`),
-        description: `${d.name} oto kurtarma ve çekici hizmeti. ${d.loc} ortalama ${etaText(d)} içinde yanınızdayız. ${d.mahalleler.slice(0, 4).join(", ")} ve tüm mahalleler. Sabit fiyat, sigortalı taşıma, 7/24.`,
+        title: mkTitle(d.slug === "pendik" ? "Pendik Oto Kurtarma – 36 Mahallede 7/24" : `${d.name} Oto Kurtarma – 7/24 Çekici`),
+        description: d.slug === "pendik"
+          ? `Pendik oto kurtarma: Kurtköy, Kaynarca, Güzelyalı, Yenişehir ve 36 mahallenin her birinde 7/24 çekici. Mahalle mahalle tahmini varış süreleri ve harita. Sabit fiyat.`
+          : `${d.name} oto kurtarma ve çekici hizmeti. Pendik'teki garajımızdan tahminen ${etaText(d)} içinde yanınızdayız. ${d.mahalleler.slice(0, 4).join(", ")} ve tüm mahalleler. Sabit fiyat, 7/24.`,
         breadcrumbs: [
           { label: "Ana sayfa", href: "/" },
           { label: "Bölgeler", href: "/bolgeler/" },

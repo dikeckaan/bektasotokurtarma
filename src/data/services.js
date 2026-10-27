@@ -212,10 +212,10 @@ export const services = [
   },
   {
     slug: "sehirlerarasi-cekici", name: "Şehirlerarası Çekici", h1: "Şehirlerarası Oto Çekici",
-    short: "Anadolu Yakası'ndan Türkiye'nin her iline araç taşıma.",
+    short: "Pendik ve Anadolu Yakası'ndan Türkiye'nin her iline araç taşıma.",
     combo: false, priority: 10,
     price: "Mesafeye göre net fiyat",
-    intro: "Anadolu Yakası'ndan Ankara, İzmir, Bursa, Antalya ve diğer illere araç taşıyoruz. Şehirlerarası taşımalarda fiyatı mesafe üzerinden hesaplayıp yola çıkmadan yazılı olarak bildiriyoruz; sürpriz km ücreti çıkmıyor.",
+    intro: "Pendik ve Anadolu Yakası'ndan Ankara, İzmir, Bursa, Antalya ve diğer illere araç taşıyoruz. Şehirlerarası taşımalarda fiyatı mesafe üzerinden hesaplayıp yola çıkmadan yazılı olarak bildiriyoruz; sürpriz km ücreti çıkmıyor.",
     when: [
       "Başka ilde satın alınan aracın getirilmesi",
       "Taşınma nedeniyle araç transferi",

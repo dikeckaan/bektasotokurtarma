@@ -1,10 +1,11 @@
 # Bektaş Oto Kurtarma — cekici.online
 
-İstanbul Anadolu Yakası için hazırlanmış, Cloudflare Workers üzerinde çalışan
+Pendik merkezli (garaj Pendik'te; Pendik'in 36 mahallesi + Anadolu Yakası'nın
+14 ilçesi) bir oto kurtarma işletmesi için hazırlanmış, Cloudflare Workers üzerinde çalışan
 statik web sitesi. Tasarım yönü: **Gece Nöbeti** — koyu asfalt zemin, tepe
 lambası kehribarı, sıkışık büyük harf tipografi.
 
-- **116 sayfa**, tamamı build sırasında üretiliyor
+- **203 sayfa**, tamamı build sırasında üretiliyor
 - **Sıfır JavaScript** (menü, S.S.S. akordeonu ve sabit arama çubuğu saf CSS)
 - Sayfa başına ortalama **~22 KB HTML + 17 KB CSS**
 - Veritabanı, CMS ve sunucu yok
@@ -129,7 +130,8 @@ Hepsi tek dosyada: **`src/data/site.js`**
 | `domain`, `origin`, `email` | ✅ girildi — cekici.online |
 | `addressVerified` + `address` | ⬜ **`false`** — aşağıya bak |
 | `foundedYear` | ⬜ kuruluş yılı doğrulanacak (şu an 1998) |
-| `claims.avgEta`, `claims.fleetSize` | ⬜ gerçek değerler |
+| `geo` | ⬜ **garajın gerçek konumu** — şu an Pendik istasyonu çevresi. Tüm varış süreleri buradan hesaplanır |
+| `claims.avgEta`, `claims.fleetSize` | ⬜ gerçek değerler (`avgEta` = Pendik mahallelerinin tahmini ortanca süresi, build çıktısıyla uyumlu tutun) |
 | `claims.reviewRating` / `reviewCount` | ⬜ Google'da gerçekten varsa doldur, **yoksa `null` bırak** |
 | `profiles` | ⬜ Google Maps, Instagram, Facebook bağlantıları |
 | `photos` | ⬜ `assets/img/README.md` içinde anlatıldı |
@@ -137,7 +139,9 @@ Hepsi tek dosyada: **`src/data/site.js`**
 Ayrıca:
 
 - `src/data/faq.js` → `priceTable`: fiyatlar yer tutucudur, güncelle
-- `src/data/districts.js` → `eta` alanları: gerçek ortalama varış süreleri
+- Varış süreleri elle yazılmıyor: `src/lib/sure.js` garajdan (`site.geo`) yol
+  mesafesine göre hesaplıyor ve sitede her yerde "tahmini" olarak geçiyor.
+  Katsayılar (yol katsayısı, hız) gerçek deneyimle uyuşmuyorsa orada düzeltin.
 
 ### Adres neden boş?
 
@@ -150,7 +154,7 @@ adres yayınlamak, adres yayınlamamaktan daha zararlıdır — Google Business
 Profile ile sitedeki adres (NAP) uyuşmazsa yerel sıralama doğrudan düşer.
 
 Gerçek adres netleşince: `address` alanlarını doldur, `addressVerified: true`
-yap, `geo` koordinatlarını Google Maps'ten al. Tek build ile 116 sayfa güncellenir.
+yap, `geo` koordinatlarını Google Maps'ten al. Tek build ile tüm sayfalar güncellenir.
 
 > **Uyarı:** Sitede geçen her sayı (varış süresi, yıl, filo sayısı, puan)
 > doğrulanabilir olmalı. Yerel SEO'da en hızlı güven kaybettiren şey,
@@ -166,12 +170,29 @@ yap, `geo` koordinatlarını Google Maps'ten al. Tek build ile 116 sayfa güncel
 | Ana sayfa | 1 | `/` |
 | Kurumsal | 7 | `/bolgeler/` `/hizmetler/` `/fiyatlar/` `/sss/` `/hakkimizda/` `/iletisim/` `/404.html` |
 | Hizmet | 10 | `/hizmetler/oto-cekici/` |
-| İlçe | 14 | `/kadikoy-oto-kurtarma/` |
+| İlçe | 14 | `/kadikoy-oto-kurtarma/` (Pendik sayfası 36 mahallenin merkezi) |
+| Pendik mahallesi | 36 | `/pendik/kurtkoy-cekici/` |
+| Havalimanı | 1 | `/sabiha-gokcen-havalimani-cekici/` |
 | İlçe + hizmet | 84 | `/kadikoy-aku-takviye/` |
+| Arıza rehberi | 47 | `/rehber/hararet-yapiyor/` |
 
 İlçe + hizmet sayfaları 14 ilçe × 6 öncelikli hizmetten üretiliyor.
 Her sayfa, ilçeye özel saha notu, mahalle listesi, ana arterler ve
 o ilçeye özel S.S.S. içeriyor; şablon metin tekrarı değil.
+
+### Pendik mahalleleri
+
+Mahalle sınırları, komşulukları, içinden geçen yollar ve referans noktaları
+(istasyon, hastane, AVM, sanayi sitesi, havalimanı) OpenStreetMap'ten
+`tools/fetch-pendik.mjs` ile çekilip `src/data/pendik-geo.js` içine yazılır:
+
+```bash
+node tools/fetch-pendik.mjs   # bir kez; sonuç depoya girer, build internete çıkmaz
+```
+
+Mahalle sayfalarında elle yazılmış yerel bilgi yok; her yer adı haritada
+gerçekten o mahallenin içinde. Pendik mahalle haritası (`pendikMapSvg`) ve
+`/varis-suresi/` sayfasındaki konum → mahalle tespiti aynı veriyi kullanır.
 
 ### Yeni ilçe / hizmet eklemek
 
@@ -185,8 +206,11 @@ Hizmete `combo: true` verirsen 14 ilçe için kesişim sayfası da üretilir.
 
 - **Schema.org** her sayfada tek `@graph`: `AutomotiveBusiness` + `WebSite`
   + `BreadcrumbList` + sayfaya göre `Service` ve `FAQPage`
-- `areaServed` olarak 14 ilçe, `openingHoursSpecification` 7/24
-- Canonical, `og:` etiketleri, `tr-TR`, `geo.region`
+- `areaServed`: garaj merkezli 25 km `GeoCircle` + 14 ilçe; mahalle
+  sayfalarında koordinatlı `Place`, havalimanı sayfasında `Airport`
+- Adres doğrulanmamışken bile `addressLocality: Pendik` yazılır
+- Canonical, `og:` etiketleri, `tr-TR`, `geo.region`, `geo.placename`,
+  `geo.position`, `ICBM`
 - Otomatik `sitemap.xml` (öncelik kademeli) ve `robots.txt`
 - Footer'daki iç link ağı sayesinde her sayfa **en fazla 2 tık** derinlikte
 - Build sırasında otomatik kontrol: çift URL, eksik/uzun title,
@@ -215,7 +239,7 @@ yöntemleri, güven maddeleri ve adımları form üzerinden düzenleyip
 1. Sayfayı aç, alanları doldur
 2. **site.js indir** düğmesine bas
 3. İnen dosyayı depodaki `src/data/site.js` ile değiştir
-4. Commit + push → 117 sayfa birden güncellenir
+4. Commit + push → tüm sayfalar birden güncellenir
 
 **Bilinmesi gerekenler**
 
@@ -352,9 +376,11 @@ dosya yolu yazıldığı anda o alan `<img>`'e dönüşüyor.
 build.mjs              üretici — tüm sayfaları dist/ içine yazar
 wrangler.jsonc         Cloudflare yapılandırması
 src/worker.js          301 yönlendirme + cache/güvenlik başlıkları
-src/data/              site.js, districts.js, services.js, faq.js
-src/lib/               layout.js (kabuk), schema.js, util.js
-src/pages/             home, district, service, combo, static
+src/data/              site.js, districts.js, mahalleler.js, services.js, faq.js
+                       geo.js / pendik-geo.js (OSM'den üretilir, elle düzenlenmez)
+src/lib/               layout.js (kabuk), schema.js, map.js, sure.js, util.js
+src/pages/             home, district, mahalle, havalimani, service, combo, static
+tools/                 fetch-geo, fetch-pendik, seo-audit, live-check, indexnow
 assets/styles.css      tasarım sistemi
 dist/                  üretilen çıktı (git'e girmez)
 ```

@@ -4,13 +4,14 @@ import { comboServices } from "../data/services.js";
 import { page, ctaBand, faqBlock, links } from "../lib/layout.js";
 import { esc, list, pick, etaText, mkTitle } from "../lib/util.js";
 import { faqSchema, serviceSchema } from "../lib/schema.js";
+import { mahalleler } from "../data/mahalleler.js";
 
 /* Kesisim sayfalari ince icerikle dolmasin diye metin ilce + hizmet
    verisinden kuruluyor; her sayfada en az iki ilceye ozel cumle var. */
 const OPENERS = [
-  (d, s) => `${d.loc} ${s.comboLabel.toLowerCase()} hizmetine ihtiyacınız varsa doğru yerdesiniz. ${d.name} sınırları içindeki çağrılara ortalama ${etaText(d)} içinde ulaşıyor, işlemi yerinde tamamlıyoruz.`,
+  (d, s) => `${d.loc} ${s.comboLabel.toLowerCase()} hizmetine ihtiyacınız varsa doğru yerdesiniz. ${d.name} sınırları içindeki çağrılara tahminen ${etaText(d)} içinde ulaşıyor, işlemi yerinde tamamlıyoruz.`,
   (d, s) => `${d.name} ${s.comboLabel.toLowerCase()} çağrılarını 7 gün 24 saat karşılıyoruz. ${list(d.mahalleler.slice(0, 4))} ve ${d.gen} diğer tüm mahallelerinde aynı fiyat, aynı süre geçerli.`,
-  (d, s) => `${s.comboLabel} için ${d.loc} beklemeniz gereken süre ortalama ${etaText(d)}. Çağrıyı aldığımızda size en yakın aracı belirleyip plakasını ve sürücü adını bildiriyoruz.`,
+  (d, s) => `${s.comboLabel} için ${d.loc} beklemeniz gereken tahmini süre ${etaText(d)}. Çağrıyı aldığımızda size en yakın aracı belirleyip plakasını ve sürücü adını bildiriyoruz.`,
 ];
 
 export function comboPages() {
@@ -24,7 +25,7 @@ export function comboPages() {
       const faq = [
         [`${title} ne kadar sürede geliyor?`,
          d.eta
-           ? `${d.name} içindeki ${s.comboLabel.toLowerCase()} çağrılarına ortalama ${d.eta} dakikada ulaşıyoruz. ${d.landmark} ve ${d.arterler[0]} çevresinde bu süre daha kısa oluyor.`
+           ? `${d.name} içindeki ${s.comboLabel.toLowerCase()} çağrılarına tahminen ${d.eta} dakikada ulaşıyoruz. ${d.landmark} ve ${d.arterler[0]} çevresinde trafiğe göre bu süre değişebilir.`
            : `${d.loc} taşıma feribot seferine bağlı planlanır; çağrıda ilk uygun sefer saatini birlikte belirliyoruz.`],
         [`${title} ücreti ne kadar?`,
          `${s.price} tutarından başlıyor. Kesin fiyatı aracınızın türünü ve konumunuzu öğrendikten sonra telefonda net olarak söylüyoruz; yola çıktıktan sonra değişmiyor.`],
@@ -81,7 +82,9 @@ export function comboPages() {
       <h2>${esc(title)} verdiğimiz mahalleler</h2>
       <p class="lede">${esc(d.note2)}</p>
     </div>
-    <div class="chips">${d.mahalleler.map((m) => `<span class="chip">${esc(m)}</span>`).join("")}</div>
+    <div class="chips">${d.slug === "pendik"
+      ? mahalleler.map((m) => `<a class="chip" href="${m.path}">${esc(m.ad)}</a>`).join("")
+      : d.mahalleler.map((m) => `<span class="chip">${esc(m)}</span>`).join("")}</div>
   </div>
 </section>
 
@@ -101,7 +104,7 @@ export function comboPages() {
 </section>
 
 ${faqBlock(faq, `${title} hakkında sık sorulanlar`)}
-${ctaBand(`${title} için hemen arayın`, `${d.loc} ortalama ${etaText(d)} içinde yanınızdayız. Süreyi ve net fiyatı telefonda söylüyoruz.`)}`;
+${ctaBand(`${title} için hemen arayın`, `${d.loc} tahminen ${etaText(d)} içinde yanınızdayız. Süreyi ve net fiyatı telefonda söylüyoruz.`)}`;
 
       out.push({
         path,

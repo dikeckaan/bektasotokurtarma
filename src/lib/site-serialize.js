@@ -65,6 +65,7 @@ export function serializeSite(d) {
   L.push("    postalCode: " + q(s.address.postalCode) + ",");
   L.push('    country: "TR",');
   L.push("  },");
+  L.push("  // Garaj konumu: harita isareti ve tum varis sureleri buradan hesaplanir");
   L.push("  geo: { lat: " + s.geo.lat + ", lng: " + s.geo.lng + " },");
   L.push("");
   L.push("  domain: " + q(s.domain) + ",");

@@ -8,7 +8,7 @@ export const site = {
   name: "Bektaş Oto Kurtarma",
   shortName: "Bektaş",
   legalName: "Bektaş Oto Kurtarma",
-  tagline: "İstanbul Anadolu Yakası 7/24 oto çekici ve yol yardım",
+  tagline: "Pendik 7/24 oto çekici ve yol yardım",
 
   phoneDisplay: "0530 951 25 69",
   phoneHref: "+905309512569",       // tel: linki, ulke koduyla
@@ -28,12 +28,17 @@ export const site = {
 
   address: {
     street: "Örnek Mahallesi, Örnek Caddesi No: 1",
-    district: "Ataşehir",
+    district: "Pendik",
     city: "İstanbul",
-    postalCode: "34000",
+    postalCode: "34890",
     country: "TR",
   },
-  geo: { lat: 40.9923, lng: 29.1244 }, // Atasehir merkez - gercek konumla degistir
+  /**
+   * Garaj konumu. Haritadaki isaret, tum ilce ve mahalle varis sureleri
+   * ve schema.org koordinati buradan hesaplanir. Su an Pendik merkez
+   * (Pendik istasyonu cevresi) — gercek garaj konumuyla degistirin.
+   */
+  geo: { lat: 40.8887, lng: 29.2386 },
 
   domain: "cekici.online",
   origin: "https://cekici.online",
@@ -49,7 +54,7 @@ export const site = {
 
   // Sitede gecen sayisal iddialar. Hepsi dogrulanabilir olmali.
   claims: {
-    avgEta: 18,          // dakika, Anadolu Yakasi ortalamasi
+    avgEta: 15,          // dakika, Pendik mahallelerinin tahmini ortanca varis suresi
     districtCount: 14,
     fleetSize: 9,        // arac sayisi
     reviewRating: null,  // ornegin 4.9 -> Google'da gercekten varsa doldur

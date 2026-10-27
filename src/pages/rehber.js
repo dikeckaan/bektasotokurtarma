@@ -11,7 +11,7 @@
 import { site } from "../data/site.js";
 import { rehber, kategoriler } from "../data/rehber.js";
 import { districts } from "../data/districts.js";
-import { serviceBySlug } from "../data/services.js";
+import { serviceBySlug, comboServices } from "../data/services.js";
 import { page, ctaBand, faqBlock, links } from "../lib/layout.js";
 import { esc, mkTitle, list } from "../lib/util.js";
 import { faqSchema, ORG_ID } from "../lib/schema.js";
@@ -69,6 +69,8 @@ function sebepTablosu(r) {
 </div>`;
 }
 
+const comboServiceBySlug = Object.fromEntries(comboServices.map((s) => [s.slug, s]));
+
 /** Yerel baglanti: rehber sayfasindan ilcelere ve hizmete kopru. */
 function yerelBlok(r) {
   const s = serviceBySlug[r.hizmet];
@@ -78,8 +80,8 @@ function yerelBlok(r) {
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow">Yardım gerekirse</span>
-      <h2>${esc(s.name)} — Anadolu Yakası'nda 7/24</h2>
-      <p class="lede">${esc(s.short)} Ortalama ${site.claims.avgEta} dakikada yanınızdayız, fiyatı yola çıkmadan söylüyoruz.</p>
+      <h2>${esc(s.name)} — Pendik'te 7/24</h2>
+      <p class="lede">${esc(s.short)} Pendik'te tahminen ${site.claims.avgEta} dakikada yanınızdayız, fiyatı yola çıkmadan söylüyoruz.</p>
     </div>
     <div class="btn-row" style="margin-bottom:26px">
       <a class="btn" href="${links.tel}" data-track="tel-rehber">Ara: ${esc(site.phoneDisplay)}</a>
@@ -88,6 +90,7 @@ function yerelBlok(r) {
     <div class="chips">
       <a class="chip" href="/hizmetler/${s.slug}/">${esc(s.name)} detayları</a>
       <a class="chip" href="/varis-suresi/">Varış süresi hesapla</a>
+      ${comboServiceBySlug[s.slug] ? `<a class="chip" href="/pendik-${s.slug}/">Pendik ${esc(s.comboLabel.toLowerCase())}</a>` : ""}
       ${secili.map((d) => `<a class="chip" href="/${d.slug}-oto-kurtarma/">${esc(d.name)} ${d.eta} dk</a>`).join("")}
       <a class="chip" href="/bolgeler/">Tüm bölgeler</a>
     </div>
@@ -297,7 +300,7 @@ ${ctaBand()}`,
           <p class="muted">${esc(s.short)}</p>
           <a class="btn" href="${links.tel}" data-track="tel-rehber-yan">${esc(site.phoneDisplay)}</a>
           <a class="btn btn--wa" href="${links.wa}" rel="noopener">WhatsApp</a>
-          <p class="muted" style="font-size:13.5px">7/24 açık · ortalama ${site.claims.avgEta} dk · sabit fiyat</p>
+          <p class="muted" style="font-size:13.5px">7/24 açık · Pendik'te ~${site.claims.avgEta} dk · sabit fiyat</p>
         </div>
         ${ilgili.length ? `<div class="card">
           <h3>İlgili konular</h3>

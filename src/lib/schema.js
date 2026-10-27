@@ -12,8 +12,8 @@ export function organizationSchema() {
     "@type": ["AutomotiveBusiness", "LocalBusiness"],
     "@id": ORG_ID,
     name: site.name,
-    alternateName: "Bektaş Çekici",
-    description: `${site.tagline}. Anadolu Yakası'nın 14 ilçesinde oto çekici, yol yardım, akü takviye ve kaza kurtarma hizmeti.`,
+    alternateName: ["Bektaş Çekici", "Pendik Çekici Bektaş", "Bektaş Oto Kurtarma Pendik"],
+    description: `${site.tagline}. Garajı Pendik'te; Pendik'in 36 mahallesi ve Anadolu Yakası'nın ${site.claims.districtCount} ilçesinde oto çekici, yol yardım, akü takviye ve kaza kurtarma hizmeti.`,
     url: site.origin + "/",
     telephone: site.phoneSchema,
     email: site.email,
@@ -37,16 +37,29 @@ export function organizationSchema() {
           },
         }
       : {
-          address: { "@type": "PostalAddress", addressRegion: site.address.city, addressCountry: site.address.country },
+          // Hizmet alani isletmesi: sokak adresi yok ama ilce bilgisi dogru ve yerel aramada belirleyici
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: site.address.district,
+            addressRegion: site.address.city,
+            addressCountry: site.address.country,
+          },
         }),
     openingHoursSpecification: [{
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       opens: "00:00", closes: "23:59",
     }],
-    areaServed: districts.map((d) => ({
-      "@type": "AdministrativeArea", name: `${d.name}, İstanbul`,
-    })),
+    // Garajdan 25 km yaricap Pendik'in tamamini ve komsu ilceleri kapsar
+    areaServed: [
+      {
+        "@type": "GeoCircle",
+        geoMidpoint: { "@type": "GeoCoordinates", latitude: site.geo.lat, longitude: site.geo.lng },
+        geoRadius: 25000,
+      },
+      ...districts.map((d) => ({ "@type": "AdministrativeArea", name: `${d.name}, İstanbul` })),
+    ],
+    hasMap: site.profiles.googleMaps || undefined,
     knowsLanguage: "tr-TR",
   };
   const sameAs = Object.values(site.profiles).filter(Boolean);
@@ -93,13 +106,17 @@ export function faqSchema(pairs) {
   };
 }
 
-export function serviceSchema({ name, description, url, areaNames, price }) {
+/** places: ilce adlarinin yanina eklenecek hazir Place dugumleri (mahalle, havalimani). */
+export function serviceSchema({ name, description, url, areaNames, price, places = [] }) {
   return {
     "@type": "Service",
     name, description, url: site.origin + url,
     serviceType: name,
     provider: { "@id": ORG_ID },
-    areaServed: areaNames.map((n) => ({ "@type": "AdministrativeArea", name: `${n}, İstanbul` })),
+    areaServed: [
+      ...areaNames.map((n) => ({ "@type": "AdministrativeArea", name: `${n}, İstanbul` })),
+      ...places,
+    ],
     availableChannel: {
       "@type": "ServiceChannel",
       servicePhone: { "@type": "ContactPoint", telephone: site.phoneSchema, contactType: "customer service", availableLanguage: "Turkish" },

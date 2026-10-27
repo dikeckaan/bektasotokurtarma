@@ -9,6 +9,8 @@
 import { strictEqual, ok } from "node:assert/strict";
 import { geo } from "../src/data/geo.js";
 import { districts } from "../src/data/districts.js";
+import { pendikGeo } from "../src/data/pendik-geo.js";
+import { mahalleler } from "../src/data/mahalleler.js";
 
 function icinde(lon, lat, halka) {
   let v = false;
@@ -73,6 +75,50 @@ test("her ilçenin sınır verisi var ve kapalı halka", () => {
 
 test("sınır verisi makul boyutta (sayfa ağırlığı)", () => {
   const bayt = JSON.stringify(geo.map((g) => g.halkalar)).length;
+  ok(bayt < 20000, `poligon verisi ${(bayt / 1024).toFixed(1)} KB — 20 KB'i asmamali`);
+});
+
+console.log("\n  konum -> Pendik mahallesi\n");
+
+const mahalleBul = (lon, lat) =>
+  pendikGeo.find((g) => g.halkalar.some((h) => icinde(lon, lat, h)))?.slug ?? null;
+
+// Gercek koordinatlar; sadelestirilmis halkalarla dogru mahalle cikmali
+const MAHALLE_NOKTALARI = [
+  ["Sabiha Gökçen Havalimanı terminali", 29.3092, 40.8986, "sanayi"],
+  ["Pendik Marina", 29.2283, 40.8770, "bati"],
+  ["Kaynarca Marmaray", 29.2600, 40.8730, "kaynarca"],
+];
+for (const [ad, lon, lat, beklenen] of MAHALLE_NOKTALARI) {
+  test(`${ad} → ${beklenen}`, () => strictEqual(mahalleBul(lon, lat), beklenen));
+}
+
+// Mahalle sayfalarinda "bu mahallede" denen her referans nokta, tarayiciya
+// giden sadelestirilmis sinirla da ayni mahallede kalmali
+test("referans noktaların %95'i sadeleştirilmiş sınırda da aynı mahallede", () => {
+  const tum = pendikGeo.flatMap((g) => g.noktalar.map((n) => [g.slug, n]));
+  const tutan = tum.filter(([slug, n]) => mahalleBul(n.nokta[0], n.nokta[1]) === slug);
+  ok(tutan.length / tum.length >= 0.95, `${tutan.length}/${tum.length} tuttu`);
+});
+
+test("36 mahalle, her birinin sayfası ve süresi var", () => {
+  strictEqual(mahalleler.length, 36);
+  for (const m of mahalleler) {
+    ok(m.eta > 0 && m.eta < 60, m.slug + " suresi makul degil: " + m.eta);
+    ok(m.path === `/pendik/${m.slug}-cekici/`, m.slug + " yolu bozuk");
+  }
+});
+
+test("komşuluk karşılıklı (A, B'nin komşusuysa B de A'nın)", () => {
+  for (const g of pendikGeo) {
+    for (const k of g.komsular) {
+      ok(pendikGeo.find((x) => x.slug === k).komsular.includes(g.slug), `${g.slug} ~ ${k} tek yonlu`);
+    }
+  }
+});
+
+test("Pendik sınır verisi makul boyutta (sayfa ağırlığı)", () => {
+  const bayt = JSON.stringify(pendikGeo.map((g) => g.halkalar)).length;
   ok(bayt < 20000, `poligon verisi ${(bayt / 1024).toFixed(1)} KB — 20 KB'i asmamali`);
 });
 

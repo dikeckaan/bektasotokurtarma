@@ -18,6 +18,8 @@ import { staticPages } from "./src/pages/static.js";
 import { editPage } from "./src/pages/edit.js";
 import { etaPage } from "./src/pages/eta.js";
 import { rehberPages } from "./src/pages/rehber.js";
+import { mahallePages } from "./src/pages/mahalle.js";
+import { havalimaniPage } from "./src/pages/havalimani.js";
 import { offlinePage } from "./src/pages/offline.js";
 import { rehber } from "./src/data/rehber.js";
 import { llmsTxt, llmsFullTxt } from "./src/lib/llms.js";
@@ -60,6 +62,8 @@ const pages = [
   ...staticPages(),
   ...servicePages(),
   ...districtPages(),
+  ...mahallePages(),
+  havalimaniPage(),
   ...comboPages(),
   ...rehberPages(),
   etaPage(),
@@ -150,7 +154,10 @@ for (const p of pages) {
 const today = new Date().toISOString().slice(0, 10);
 const priorityFor = (p) => {
   if (p === "/") return "1.0";
-  if (p.endsWith("-oto-kurtarma/")) return "0.9";
+  // Pendik: ilce sayfasi, mahalleler, havalimani ve Pendik hizmet sayfalari en ust sirada
+  if (p === "/pendik-oto-kurtarma/") return "0.95";
+  if (p.startsWith("/pendik/") || p === "/sabiha-gokcen-havalimani-cekici/" || p.startsWith("/pendik-")) return "0.9";
+  if (p.endsWith("-oto-kurtarma/")) return "0.8";
   if (p.startsWith("/hizmetler/")) return "0.8";
   if (/^\/[a-z-]+-[a-z-]+\/$/.test(p)) return "0.7";
   return "0.6";
@@ -323,6 +330,7 @@ const FONT = {
   " ": "                                   ",
 };
 const CEDILLA = { "Ş": "S", "Ç": "C", "Ğ": "G" };
+const NOKTASIZ = { "İ": "I" }; // 5x7 matriste noktali buyuk I icin yer yok; duz I yeterince okunur
 const DOT_ON = 1, DOT_OFF = 0;
 
 function fillRect(px, W, x, y, w, h, [r, g, b]) {
@@ -350,7 +358,7 @@ function dot(px, W, cx, cy, r, [cr, cg, cb]) {
 function dotText(px, W, text, x0, y0, pitch, on, off) {
   let x = x0;
   for (const ch of text.toUpperCase()) {
-    const base = CEDILLA[ch] || ch;
+    const base = CEDILLA[ch] || NOKTASIZ[ch] || ch;
     const g = FONT[base] || FONT[" "];
     for (let r = 0; r < 7; r++) {
       for (let c = 0; c < 5; c++) {
@@ -399,7 +407,7 @@ function ogPng() {
   }
 
   dotText(px, W, "7/24 AÇIK", 196, 98, 8, AMBER, DIM);
-  const area = "ANADOLU YAKASI";
+  const area = "PENDİK İSTANBUL";
   dotText(px, W, area, 1112 - dotWidth(area, 6), 105, 6, AMBER, DIM);
   dotText(px, W, "BEKTAŞ OTO", 96, 176, 15, AMBER, DIM);
   dotText(px, W, "KURTARMA", 96, 318, 15, AMBER, DIM);
@@ -613,6 +621,7 @@ console.log(`    ana sayfa     1`);
 console.log(`    kurumsal      ${staticPages().length}`);
 console.log(`    hizmet        ${servicePages().length}`);
 console.log(`    ilce          ${districtPages().length}`);
+console.log(`    pendik mah.   ${mahallePages().length} (+ Sabiha Gökçen)`);
 console.log(`    ilce+hizmet   ${comboPages().length}`);
 console.log(`    ariza rehberi ${rehberPages().length}`);
 console.log(`  HTML toplam     ${kb(bytes)}  (ort. ${kb(bytes / pages.length)}/sayfa)`);

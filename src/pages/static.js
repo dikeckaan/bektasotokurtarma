@@ -5,7 +5,8 @@ import { generalFaq, priceTable } from "../data/faq.js";
 import { page, ctaBand, faqBlock, districtGrid, serviceCards, links } from "../lib/layout.js";
 import { esc, etaText, mkTitle } from "../lib/util.js";
 import { photo } from "../lib/media.js";
-import { mapSvg } from "../lib/map.js";
+import { mapSvg, pendikMapSvg } from "../lib/map.js";
+import { mahalleler, yakindanUzaga } from "../data/mahalleler.js";
 import { faqSchema } from "../lib/schema.js";
 
 const crumb = (label) => [{ label: "Ana sayfa", href: "/" }, { label }];
@@ -17,8 +18,8 @@ function bolgeler() {
 <section class="hero">
   <div class="wrap"><div class="hero-in">
     <span class="eyebrow">Hizmet bölgeleri</span>
-    <h1>Anadolu Yakası'nın<br><em>${site.claims.districtCount} ilçesi</em></h1>
-    <p class="lede">Kadıköy'den Şile'ye kadar tüm Anadolu Yakası'nda 7/24 oto kurtarma. Her ilçeye sabit araç konumlandırdık; aşağıdaki süreler son üç ayın ortalama varış süreleridir.</p>
+    <h1>Pendik merkezli<br><em>${site.claims.districtCount} ilçe, ${mahalleler.length} mahalle</em></h1>
+    <p class="lede">Garajımız Pendik'te. Pendik'in ${mahalleler.length} mahallesine ve Kadıköy'den Şile'ye kadar Anadolu Yakası'nın tamamına 7/24 oto kurtarma. Aşağıdaki süreler garajımızdan yol mesafesine göre tahminidir.</p>
     <div class="btn-row"><a class="btn" href="${links.tel}">Hemen ara: ${esc(site.phoneDisplay)}</a></div>
   </div></div>
 </section>
@@ -33,14 +34,26 @@ function bolgeler() {
 <section class="sec sec--panel">
   <div class="wrap">
     <div class="sec-head">
+      <span class="eyebrow">Pendik</span>
+      <h2>Pendik'in ${mahalleler.length} mahallesi</h2>
+      <p class="lede">Garajımızın bulunduğu Pendik'te her mahallenin kendi sayfası var: içinden geçen yollar, referans noktalar ve tahmini varış süresi.</p>
+    </div>
+    ${pendikMapSvg({ id: "bolge-pendik-harita" })}
+    <div class="chips" style="margin-top:24px">${yakindanUzaga.map((m) => `<a class="chip" href="${m.path}">${esc(m.ad)} · ${m.eta} dk</a>`).join("")}</div>
+  </div>
+</section>
+
+<section class="sec sec--panel">
+  <div class="wrap">
+    <div class="sec-head">
       <span class="eyebrow">Süreler</span>
       <h2>Bu süreler nereden geliyor?</h2>
-      <p class="lede">Yukarıdaki dakikalar tahmin değil, son üç ayda o ilçeye giden çağrıların ortalaması. Çağrı anında size özel süreyi ayrıca teyit ediyoruz — çünkü ortalama, sizin bulunduğunuz noktayı bilmez.</p>
+      <p class="lede">Haritadaki dakikalar, Pendik'teki garajımızdan o bölgeye olan yol mesafesinden hesaplanan tahminlerdir. Canlı araç takibi değildir; çağrı anında size en yakın aracın gerçek konumuna bakıp kesin süreyi ayrıca söylüyoruz.</p>
     </div>
     <div class="grid grid--3">
       <div class="prose">
         <h3>Neden ilçeye göre değişiyor</h3>
-        <p>Anadolu Yakası merkezden doğuya doğru seyrelir. Kadıköy–Ataşehir–Ümraniye üçgeninde araçlarımız birbirine yakın durur; Şile ve Beykoz Riva tarafında mesafe tek başına 30 dakikayı bulabilir.</p>
+        <p>Garajımız Pendik'te olduğu için Pendik, Kartal, Tuzla ve Sultanbeyli en hızlı ulaştığımız bölgeler. Kadıköy ve Üsküdar tarafında mesafe uzar; Şile ve Beykoz Riva tarafında yol tek başına bir saate yaklaşabilir.</p>
       </div>
       <div class="prose">
         <h3>Saat de belirleyici</h3>
@@ -48,7 +61,7 @@ function bolgeler() {
       </div>
       <div class="prose">
         <h3>Araçları nereye koyduğumuz</h3>
-        <p>Filoyu sabit garajda bekletmiyoruz. Vardiya boyunca araçlar çağrı yoğunluğuna göre TEM, D-100 ve Şile Otoyolu bağlantılarına dağıtılır.</p>
+        <p>Araçlar vardiya başında Pendik'teki garajdan çıkar; gün içinde çağrı yoğunluğuna göre D-100, TEM Kurtköy ve Sahil Bulvarı bağlantılarına dağıtılır. Bu yüzden gerçek süre çoğu zaman tahminin altında kalır.</p>
       </div>
     </div>
   </div>
@@ -63,8 +76,8 @@ function bolgeler() {
 ${ctaBand()}`;
   return { path, html: page({
     path, current: path,
-    title: mkTitle("Hizmet Bölgeleri – Anadolu Yakası"),
-    description: `İstanbul Anadolu Yakası'nın 14 ilçesinde 7/24 oto kurtarma: Kadıköy, Üsküdar, Ataşehir, Ümraniye, Maltepe, Kartal, Pendik, Tuzla ve diğerleri. Ortalama ${site.claims.avgEta} dakika.`,
+    title: mkTitle("Hizmet Bölgeleri – Pendik ve Anadolu Yakası"),
+    description: `Pendik merkezli 7/24 oto kurtarma: Pendik'in ${mahalleler.length} mahallesi ve Kartal, Tuzla, Sultanbeyli, Maltepe, Kadıköy dahil Anadolu Yakası'nın ${site.claims.districtCount} ilçesi. Tahmini varış süreleri haritası.`,
     breadcrumbs: crumb("Bölgeler"), body,
   })};
 }
@@ -77,7 +90,7 @@ function hizmetler() {
   <div class="wrap"><div class="hero-in">
     <span class="eyebrow">Hizmetler</span>
     <h1>Yolda kalmanın<br><em>her hâli için</em></h1>
-    <p class="lede">Çekiciden akü takviyesine, kilitli kapı açmadan şehirlerarası taşımaya kadar tüm hizmetlerimiz Anadolu Yakası'nın 14 ilçesinde 7/24 geçerli.</p>
+    <p class="lede">Çekiciden akü takviyesine, kilitli kapı açmadan şehirlerarası taşımaya kadar tüm hizmetlerimiz Pendik'in ${mahalleler.length} mahallesinde ve Anadolu Yakası'nın ${site.claims.districtCount} ilçesinde 7/24 geçerli.</p>
     <div class="btn-row"><a class="btn" href="${links.tel}">Hemen ara: ${esc(site.phoneDisplay)}</a></div>
   </div></div>
 </section>
@@ -112,12 +125,12 @@ function hizmetler() {
     <div class="sec-head">
       <span class="eyebrow">Filo</span>
       <h2>Hangi iş için hangi araç</h2>
-      <p class="lede">Anadolu Yakası'nın her yeri aynı araçla çıkılacak yer değil. Çağrıyı alırken adresi sorma sebebimiz bu.</p>
+      <p class="lede">Pendik'in her yeri aynı araçla çıkılacak yer değil: sahildeki dar sokak, Kurtköy'deki sanayi sitesi ve Ömerli tarafındaki köy yolu ayrı ekipman ister. Çağrıyı alırken adresi sorma sebebimiz bu.</p>
     </div>
     <div class="grid grid--4">
       <div class="card"><h3>Kayar kasa</h3><p>Standart taşımanın tamamı. Tekerlekler yerden tamamen kesilir, şanzımana yük binmez.</p></div>
-      <div class="card"><h3>Kızaklı sistem</h3><p>Alçak tavanlı otoparklar ve düşük gövdeli araçlar. Bağdat Caddesi ve plaza otoparkları için.</p></div>
-      <div class="card"><h3>Kompakt çekici</h3><p>Moda, Kuzguncuk, Anadoluhisarı gibi dar ve yokuşlu sokaklar. Büyük kasa manevra yapamaz.</p></div>
+      <div class="card"><h3>Kızaklı sistem</h3><p>Alçak tavanlı otoparklar ve düşük gövdeli araçlar. AVM, havalimanı ve site otoparkları için.</p></div>
+      <div class="card"><h3>Kompakt çekici</h3><p>Pendik merkez, Yeni ve Batı mahallelerinin dar ve yokuşlu sokakları. Büyük kasa manevra yapamaz.</p></div>
       <div class="card"><h3>Kapalı kasa</h3><p>Klasik, lüks ve yeni teslim araçlar. Hava koşullarına ve taş sıçramasına kapalı.</p></div>
     </div>
   </div>
@@ -179,8 +192,8 @@ ${faqBlock(faq, "Fiyatlandırma hakkında sık sorulanlar")}
 ${ctaBand("Aracınız için net fiyat alın", "Marka, konum ve gideceği adres yeterli. Fiyatı telefonda söylüyoruz.")}`;
   return { path, html: page({
     path, current: path,
-    title: mkTitle("Oto Çekici Fiyatları – Anadolu Yakası"),
-    description: "Anadolu Yakası oto çekici, akü takviye, lastik değişimi ve kurtarma fiyatları. İlçe içi çekici 1.500 ₺'den başlar. Gece ve bayram farkı yok, sabit fiyat.",
+    title: mkTitle("Pendik Oto Çekici Fiyatları – 2026"),
+    description: "Pendik oto çekici, akü takviye, lastik değişimi ve kurtarma fiyatları. Pendik içi çekici 1.500 ₺'den başlar. Gece ve bayram farkı yok, telefonda söylenen sabit fiyat.",
     breadcrumbs: crumb("Fiyatlar"),
     schema: [faqSchema(faq)], body,
   })};
@@ -209,7 +222,7 @@ ${ctaBand()}`;
   return { path, html: page({
     path, current: path,
     title: mkTitle("Sık Sorulan Sorular – Oto Kurtarma"),
-    description: "Oto çekici ne kadar sürede gelir, fiyat nasıl belirlenir, kasko çekici karşılar mı, otomatik araç çekilebilir mi? Anadolu Yakası oto kurtarma hakkında tüm cevaplar.",
+    description: "Oto çekici ne kadar sürede gelir, fiyat nasıl belirlenir, kasko çekici karşılar mı, otomatik araç çekilebilir mi? Pendik oto kurtarma hakkında tüm cevaplar.",
     breadcrumbs: crumb("S.S.S."),
     schema: [faqSchema(generalFaq)], body,
   })};
@@ -224,7 +237,7 @@ function hakkimizda() {
   <div class="wrap"><div class="hero-in">
     <span class="eyebrow">Hakkımızda</span>
     <h1>${years} yıldır<br><em>aynı numara</em></h1>
-    <p class="lede">Bektaş Oto Kurtarma ${site.foundedYear} yılında ${esc(site.address.district)}'de tek çekiciyle başladı. Bugün ${site.claims.fleetSize} araçlık filoyla Anadolu Yakası'nın ${site.claims.districtCount} ilçesine hizmet veriyoruz — hâlâ aynı aile işletiyor, hâlâ aynı numara.</p>
+    <p class="lede">Bektaş Oto Kurtarma ${site.foundedYear} yılında ${esc(site.address.district)}'de tek çekiciyle başladı. Bugün ${site.claims.fleetSize} araçlık filoyla Pendik'in ${mahalleler.length} mahallesine ve Anadolu Yakası'nın ${site.claims.districtCount} ilçesine hizmet veriyoruz — hâlâ aynı aile işletiyor, hâlâ aynı numara.</p>
     <div class="btn-row"><a class="btn" href="${links.tel}">${esc(site.phoneDisplay)}</a></div>
   </div></div>
 </section>
@@ -242,8 +255,8 @@ function hakkimizda() {
         <h2>Fiyatı nasıl belirliyoruz</h2>
         <p>Üç şeye bakıyoruz: aracın türü, alınacağı yer ve gideceği adres. Bunları telefonda öğrendiğimizde tek bir rakam söylüyoruz — “yaklaşık”, “civarı” ya da “yerinde bakarız” demiyoruz. Rakamı söyledikten sonra yola çıkıyoruz ve o rakam değişmiyor.</p>
         <p>Gece, hafta sonu ve bayram için fark uygulamamamızın sebebi basit: en çok yardıma ihtiyaç duyulan saatlerde fiyat artırmak, bu işi kötü şöhretli yapan şeyin ta kendisi.</p>
-        <h2>Neden sadece Anadolu Yakası</h2>
-        <p>Bütün İstanbul'a hizmet verdiğini söyleyip her yere geç kalmak yerine tek yakada kalmayı seçtik. Sabit araç konumlandırdığımız 14 ilçenin ara sokaklarını, hangi otoparkın giriş yüksekliğinin ne olduğunu ve hangi kavşakta yüklemenin tehlikeli olduğunu biliyoruz. Şehirlerarası taşıma yapıyoruz; ama acil çağrıda söz verdiğimiz yer burası.</p>
+        <h2>Neden Pendik</h2>
+        <p>Bütün İstanbul'a hizmet verdiğini söyleyip her yere geç kalmak yerine garajımızın olduğu yerde en iyi olmayı seçtik. Pendik'in ${mahalleler.length} mahallesinin ara sokaklarını, Sabiha Gökçen ve AVM otoparklarının giriş yüksekliklerini, D-100 ve TEM Kurtköy'de hangi noktada yüklemenin tehlikeli olduğunu biliyoruz. Anadolu Yakası'nın diğer ilçelerine ve şehirlerarası taşımaya da çıkıyoruz; ama acil çağrıda söz verdiğimiz yer burası.</p>
       </div>
       <div class="local">
         <h3>Künye</h3>
@@ -252,7 +265,7 @@ function hakkimizda() {
           <dt>Kuruluş</dt><dd>${site.foundedYear}</dd>
           <dt>Merkez</dt><dd>${site.addressVerified ? `${esc(site.address.district)} / ${esc(site.address.city)}` : esc(site.address.city)}</dd>
           <dt>Filo</dt><dd>${site.claims.fleetSize} araç</dd>
-          <dt>Hizmet alanı</dt><dd>Anadolu Yakası ${site.claims.districtCount} ilçe</dd>
+          <dt>Hizmet alanı</dt><dd>Pendik ${mahalleler.length} mahalle · Anadolu Yakası ${site.claims.districtCount} ilçe</dd>
           <dt>Çalışma</dt><dd>7 gün 24 saat</dd>
           <dt>Telefon</dt><dd><a href="${links.tel}">${esc(site.phoneDisplay)}</a></dd>
         </dl>
@@ -277,7 +290,7 @@ ${ctaBand()}`;
   return { path, html: page({
     path, current: path,
     title: mkTitle(`Hakkımızda – ${site.foundedYear}'den beri`),
-    description: `${site.foundedYear}'den beri İstanbul Anadolu Yakası'nda oto kurtarma. ${site.claims.fleetSize} araçlık belgeli filo, sigortalı taşıma, sabit fiyat. Aile işletmesi.`,
+    description: `${site.foundedYear}'den beri Pendik'te oto kurtarma. ${site.claims.fleetSize} araçlık belgeli filo, sigortalı taşıma, sabit fiyat. Pendik'in ${mahalleler.length} mahallesinde 7/24. Aile işletmesi.`,
     breadcrumbs: crumb("Hakkımızda"), body,
   })};
 }
@@ -307,7 +320,7 @@ function iletisim() {
           <dt>Telefon</dt><dd><a href="${links.tel}">${esc(site.phoneDisplay)}</a></dd>
           <dt>WhatsApp</dt><dd><a href="${links.wa}" rel="noopener">${esc(site.phoneDisplay)}</a></dd>
           <dt>E-posta</dt><dd><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></dd>
-          <dt>Hizmet alanı</dt><dd>${site.addressVerified ? `${esc(site.address.street)}<br>${esc(site.address.postalCode)} ${esc(site.address.district)} / ${esc(site.address.city)}` : "İstanbul Anadolu Yakası — 14 ilçe<br>Adrese servis, sabit ofis ziyareti gerekmez"}</dd>
+          <dt>Hizmet alanı</dt><dd>${site.addressVerified ? `${esc(site.address.street)}<br>${esc(site.address.postalCode)} ${esc(site.address.district)} / ${esc(site.address.city)}` : `${esc(site.address.district)} / ${esc(site.address.city)} — ${mahalleler.length} mahalle ve Anadolu Yakası ${site.claims.districtCount} ilçe<br>Adrese servis, sabit ofis ziyareti gerekmez`}</dd>
           <dt>Çalışma saatleri</dt><dd>7 gün 24 saat, bayram dahil</dd>
           <dt>Ödeme</dt><dd>${esc(site.payments.join(", "))}</dd>
         </dl>
@@ -392,7 +405,7 @@ ${ctaBand()}`;
   return { path, html: page({
     path, current: path,
     title: mkTitle("İletişim – 7/24 Oto Kurtarma"),
-    description: `${site.name} iletişim: ${site.phoneDisplay}. 7 gün 24 saat açık. İstanbul Anadolu Yakası'nın 14 ilçesinde oto çekici ve yol yardım.`,
+    description: `${site.name} iletişim: ${site.phoneDisplay}. 7 gün 24 saat açık. Pendik merkezli; Pendik'in ${mahalleler.length} mahallesi ve Anadolu Yakası'nda oto çekici ve yol yardım.`,
     breadcrumbs: crumb("İletişim"), body,
   })};
 }
@@ -415,7 +428,7 @@ function notFound() {
 </section>`;
   return { path: "/404.html", html: page({
     path: "/404.html", title: mkTitle("Sayfa bulunamadı"),
-    description: "Aradığınız sayfa bulunamadı. Anadolu Yakası oto kurtarma için 7/24 arayabilirsiniz.",
+    description: "Aradığınız sayfa bulunamadı. Pendik ve Anadolu Yakası oto kurtarma için 7/24 arayabilirsiniz.",
     body,
   }) };
 }

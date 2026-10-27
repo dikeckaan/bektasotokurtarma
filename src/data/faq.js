@@ -1,7 +1,16 @@
+import { districtBySlug } from "./districts.js";
+import { mahalleler } from "./mahalleler.js";
+
+/** Tahmini sure araligi, ornek "6–22". Sureler garaj konumundan hesaplanir. */
+const aralik = (liste) => {
+  const e = liste.map((x) => x.eta);
+  return `${Math.min(...e)}–${Math.max(...e)}`;
+};
+
 /** Genel S.S.S. — ana sayfada ilk 5'i, /sss/ sayfasinda tamami kullanilir. */
 export const generalFaq = [
-  ["Anadolu Yakası'nda ortalama ne kadar sürede geliyorsunuz?",
-   "Kadıköy, Ataşehir ve Ümraniye gibi merkez ilçelerde 12-15 dakika, Pendik ve Tuzla tarafında 23-26 dakika. Çağrıyı aldığımızda size özel süreyi net olarak söylüyoruz; tahmini bir aralık vermiyoruz."],
+  ["Çekici ne kadar sürede geliyor?",
+   `Garajımız Pendik'te. Pendik'in merkez ve sahil mahallelerinde tahminen ${aralik(mahalleler.filter((m) => m.tip !== "kirsal"))} dakika, kuzeydeki köy mahallelerinde ${aralik(mahalleler.filter((m) => m.tip === "kirsal"))} dakika; Kartal, Sultanbeyli, Maltepe ve Tuzla ${aralik(["kartal", "sultanbeyli", "maltepe", "tuzla"].map((s) => districtBySlug[s]))} dakika, Kadıköy ve Üsküdar ${aralik(["kadikoy", "uskudar"].map((s) => districtBySlug[s]))} dakika. Çağrıyı aldığımızda en yakın aracın konumuna bakıp size özel süreyi net olarak söylüyoruz.`],
   ["Gece, hafta sonu ve bayramda ek ücret var mı?",
    "Yok. Fiyatımız saat ve güne göre değişmiyor. Telefonda söylenen tutar, ödeyeceğiniz tutardır."],
   ["Fiyatı önceden öğrenebilir miyim?",
@@ -19,13 +28,13 @@ export const generalFaq = [
   ["Aracın yanında beklemem gerekiyor mu?",
    "Açık yolda anahtarı teslim edip ayrılabilirsiniz. Site ve kapalı otopark gibi izinli alanlarda ise giriş için sizin bulunmanız gerekiyor."],
   ["Şehirlerarası taşıma yapıyor musunuz?",
-   "Evet. Anadolu Yakası'ndan Türkiye'nin tüm illerine araç taşıyoruz. Mesafeye göre net fiyat verip yola çıkmadan yazılı olarak bildiriyoruz."],
+   "Evet. Pendik'ten ve Anadolu Yakası'nın tamamından Türkiye'nin tüm illerine araç taşıyoruz. Mesafeye göre net fiyat verip yola çıkmadan yazılı olarak bildiriyoruz."],
 ];
 
 /** Fiyat tablosu. Tutarlar yer tutucudur — yayina almadan once guncelleyin. */
 export const priceTable = [
-  ["İlçe içi oto çekici", "Aynı ilçe sınırları içinde", "1.500 ₺'den"],
-  ["Anadolu Yakası içi çekici", "İlçeler arası, örn. Ataşehir → Tuzla", "2.400 ₺'den"],
+  ["Pendik içi oto çekici", "Pendik'in 36 mahallesi arasında (ilçe içi)", "1.500 ₺'den"],
+  ["Anadolu Yakası içi çekici", "İlçeler arası, örn. Pendik → Kadıköy", "2.400 ₺'den"],
   ["Avrupa Yakası'na geçiş", "Köprü ve otoyol ücreti dahil", "3.200 ₺'den"],
   ["Akü takviye", "Yerinde müdahale, ölçüm dahil", "750 ₺'den"],
   ["Lastik değişimi", "Stepne takma, tork kontrolü", "900 ₺'den"],

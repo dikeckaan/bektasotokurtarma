@@ -10,6 +10,7 @@
  */
 import { site } from "../data/site.js";
 import { districts } from "../data/districts.js";
+import { mahalleler, yakindanUzaga } from "../data/mahalleler.js";
 import { sortedServices, comboServices } from "../data/services.js";
 import { generalFaq, priceTable } from "../data/faq.js";
 import { rehber, kategoriler } from "../data/rehber.js";
@@ -22,16 +23,17 @@ export function llmsTxt() {
   const L = [];
   L.push(`# ${site.name}`);
   L.push("");
-  L.push(`> ${site.tagline}. İstanbul Anadolu Yakası'nın ${site.claims.districtCount} ilçesinde 7 gün 24 saat oto çekici, yol yardım, akü takviye, lastik değişimi ve kaza sonrası kurtarma hizmeti veren aile işletmesi. Ortalama varış süresi ${site.claims.avgEta} dakika.`);
+  L.push(`> ${site.tagline}. Garajı Pendik'te; Pendik'in ${mahalleler.length} mahallesinde ve İstanbul Anadolu Yakası'nın ${site.claims.districtCount} ilçesinde 7 gün 24 saat oto çekici, yol yardım, akü takviye, lastik değişimi ve kaza sonrası kurtarma hizmeti veren aile işletmesi. Pendik içinde tahmini varış süresi ${site.claims.avgEta} dakika.`);
   L.push("");
   L.push("## Hızlı bilgiler");
   L.push("");
   L.push(`- **Telefon:** ${site.phoneDisplay} (7/24, bayram ve resmî tatiller dahil)`);
   L.push(`- **WhatsApp:** https://wa.me/${site.whatsapp}`);
   L.push(`- **Web:** ${site.origin}/`);
-  L.push(`- **Hizmet alanı:** İstanbul Anadolu Yakası — ${districts.map((d) => d.name).join(", ")}`);
+  L.push(`- **Merkez:** ${site.address.district}, ${site.address.city} (hizmet alanı işletmesi, adrese gelir)`);
+  L.push(`- **Hizmet alanı:** Pendik'in ${mahalleler.length} mahallesi ve İstanbul Anadolu Yakası — ${districts.map((d) => d.name).join(", ")}`);
   L.push(`- **Çalışma saatleri:** Her gün 00:00–24:00, kesintisiz`);
-  L.push(`- **Ortalama varış:** ${site.claims.avgEta} dakika (ilçeye göre ${Math.min(...districts.filter((d) => d.eta).map((d) => d.eta))}–${Math.max(...districts.filter((d) => d.eta).map((d) => d.eta))} dk)`);
+  L.push(`- **Tahmini varış:** Pendik içinde ${site.claims.avgEta} dakika (mahalleye göre ${yakindanUzaga[0].eta}–${yakindanUzaga.at(-1).eta} dk), diğer ilçelerde ${Math.min(...districts.filter((d) => d.eta && d.slug !== "pendik").map((d) => d.eta))}–${Math.max(...districts.filter((d) => d.eta).map((d) => d.eta))} dk. Süreler Pendik'teki garajdan yol mesafesine göre tahminidir.`);
   L.push(`- **Ödeme:** ${site.payments.join(", ")}`);
   L.push(`- **Kuruluş:** ${site.foundedYear}`);
   L.push("");
@@ -49,10 +51,17 @@ export function llmsTxt() {
     L.push(`- [${s.h1}](${u(`/hizmetler/${s.slug}/`)}): ${s.short} Fiyat: ${s.price}.`);
   });
   L.push("");
+  L.push("## Pendik mahalleleri");
+  L.push("");
+  L.push(`- [Sabiha Gökçen Havalimanı Çekici](${u("/sabiha-gokcen-havalimani-cekici/")}): havalimanı otoparkında akü, lastik ve çekici.`);
+  yakindanUzaga.forEach((m) => {
+    L.push(`- [${m.ad} Çekici](${u(m.path)}): ${m.tam}, Pendik. Tahmini varış ${m.eta} dk.${m.yollar.length ? ` Ana yollar: ${m.yollar.slice(0, 3).join(", ")}.` : ""}`);
+  });
+  L.push("");
   L.push("## Hizmet bölgeleri");
   L.push("");
   districts.forEach((d) => {
-    L.push(`- [${d.name} Oto Kurtarma](${u(`/${d.slug}-oto-kurtarma/`)}): ortalama varış ${etaText(d)}. Mahalleler: ${d.mahalleler.slice(0, 6).join(", ")}.`);
+    L.push(`- [${d.name} Oto Kurtarma](${u(`/${d.slug}-oto-kurtarma/`)}): tahmini varış ${etaText(d)}. Mahalleler: ${d.mahalleler.slice(0, 6).join(", ")}.`);
   });
   L.push("");
   L.push("## İlçeye özel hizmet sayfaları");
@@ -79,7 +88,7 @@ export function llmsTxt() {
   L.push(`- [Sık sorulan sorular](${u("/sss/")}): süre, fiyat, sigorta, kasko ve ödeme soruları`);
   L.push(`- [Hakkımızda](${u("/hakkimizda/")}): filo, belgeler ve çalışma biçimi`);
   L.push(`- [İletişim](${u("/iletisim/")}): yolda kalındığında ilk beş dakika ve belirti-hizmet tablosu`);
-  L.push(`- [Varış süresi haritası](${u("/varis-suresi/")}): konuma göre ilçe tespiti ve o ilçenin ortalama varış süresi`);
+  L.push(`- [Varış süresi haritası](${u("/varis-suresi/")}): konuma göre ilçe ve Pendik'te mahalle tespiti, tahmini varış süresi`);
   L.push(`- [Tüm bölgeler](${u("/bolgeler/")}) · [Tüm hizmetler](${u("/hizmetler/")})`);
   L.push("");
   L.push("## Optional");
@@ -127,7 +136,7 @@ export function llmsFullTxt() {
     L.push(`### ${d.name}`);
     L.push("");
     L.push(`URL: ${u(`/${d.slug}-oto-kurtarma/`)}`);
-    L.push(`Ortalama varış süresi: ${etaText(d)}`);
+    L.push(`Tahmini varış süresi: ${etaText(d)}`);
     L.push(`Mahalleler: ${list(d.mahalleler)}`);
     L.push(`Ana arterler: ${list(d.arterler)}`);
     L.push(`Referans nokta: ${d.landmark}`);
@@ -144,11 +153,15 @@ export function llmsFullTxt() {
   L.push("");
   L.push("## Varış süreleri");
   L.push("");
-  L.push(`Ortalama varış süresi ${site.claims.avgEta} dakika. Asagidaki degerler son uc ayin ortalamasidir; kesin sure telefonda, en yakin aracin gercek konumuna bakilarak soylenir.`);
+  L.push(`Garaj Pendik'te. Aşağıdaki değerler garajdan yol mesafesine göre hesaplanmış tahminlerdir; kesin süre telefonda, en yakın aracın gerçek konumuna bakılarak söylenir.`);
   L.push("");
-  L.push("| İlçe | Ortalama varış |");
+  L.push("| İlçe | Tahmini varış |");
   L.push("| --- | --- |");
   districts.forEach((d) => L.push(`| ${d.name} | ${etaText(d)} |`));
+  L.push("");
+  L.push("| Pendik mahallesi | Tahmini varış | Ana yollar | Referans noktalar |");
+  L.push("| --- | --- | --- | --- |");
+  yakindanUzaga.forEach((m) => L.push(`| [${m.ad}](${u(m.path)}) | ${m.eta} dk | ${m.yollar.slice(0, 3).join(", ")} | ${m.noktalar.slice(0, 3).map((n) => n.ad).join(", ")} |`));
   L.push("");
   L.push(`Konuma gore hesaplama: ${u("/varis-suresi/")}`);
   L.push("");
